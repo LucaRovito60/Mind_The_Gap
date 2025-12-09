@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Alpine.js -->
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,6 +35,27 @@
                             gray: '#F5F5F7',
                             dark: '#1e293b'
                         }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'blob': 'blob 7s infinite',
+                        'slide-in': 'slideIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideIn: {
+                            '0%': { opacity: '0', transform: 'translateX(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
                     }
                 }
             }
@@ -42,463 +63,708 @@
     </script>
 
     <style>
-        /* Animazioni Custom */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
-        .animate-slide-in { animation: slideInRight 0.5s ease-out forwards; }
+        /* Smooth Scroll Padding per Navbar fissa */
+        html { scroll-padding-top: 80px; }
         
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        body {
+            background-color: #FBFBFD; /* Apple-like off-white */
+            color: #1D1D1F;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #7C3AED 0%, #F97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .card-shadow {
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
         }
 
-        /* Smooth Scroll Padding per Navbar fissa */
-        html { scroll-padding-top: 80px; }
+        /* Toast Notification */
+        #toast-notification {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #toast-notification.show {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
-<body class="bg-brand-gray text-gray-800 antialiased">
+<body x-data="{ activeTab: 'home', mobileMenu: false }">
 
-    <!-- NAVBAR (Sticky & Glassmorphism) -->
-    <nav class="fixed w-full z-50 glass-effect border-b border-gray-200 transition-all duration-300" x-data="{ isOpen: false }">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <!-- Logo -->
-            <a href="#" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-orange hover:opacity-80 transition">
-                MIND THE GAP
-            </a>
+    <!-- NAVBAR -->
+    <nav class="fixed w-full z-50 glass-nav top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer" @click="activeTab = 'home'; window.scrollTo(0,0)">
+                    <span class="text-xl font-bold tracking-tight">MIND THE <span class="text-gradient">GAP</span></span>
+                </div>
 
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-600">
-                <a href="#home" class="hover:text-brand-purple transition relative group">
-                    Home
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-purple transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#report" class="hover:text-brand-purple transition relative group">
-                    Report
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-purple transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#fonti" class="hover:text-brand-purple transition relative group">
-                    Fonti
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-purple transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#discussioni" class="hover:text-brand-purple transition relative group">
-                    Discussioni
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-purple transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#info" class="hover:text-brand-purple transition relative group">
-                    Info
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-purple transition-all group-hover:w-full"></span>
-                </a>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <button @click="activeTab = 'home'; window.scrollTo(0,0)" :class="activeTab === 'home' ? 'text-brand-purple font-semibold' : 'text-gray-500 hover:text-gray-900'" class="transition-colors text-sm uppercase tracking-wide">Home</button>
+                    <button @click="activeTab = 'report'; window.scrollTo(0,0)" :class="activeTab === 'report' ? 'text-brand-purple font-semibold' : 'text-gray-500 hover:text-gray-900'" class="transition-colors text-sm uppercase tracking-wide">Report</button>
+                    <button @click="activeTab = 'fonti'; window.scrollTo(0,0)" :class="activeTab === 'fonti' ? 'text-brand-purple font-semibold' : 'text-gray-500 hover:text-gray-900'" class="transition-colors text-sm uppercase tracking-wide">Fonti</button>
+                    <button @click="activeTab = 'discussioni'; window.scrollTo(0,0)" :class="activeTab === 'discussioni' ? 'text-brand-purple font-semibold' : 'text-gray-500 hover:text-gray-900'" class="transition-colors text-sm uppercase tracking-wide">Discussioni</button>
+                    <button @click="activeTab = 'info'; window.scrollTo(0,0)" :class="activeTab === 'info' ? 'text-brand-purple font-semibold' : 'text-gray-500 hover:text-gray-900'" class="transition-colors text-sm uppercase tracking-wide">Info</button>
+                </div>
+
+                <!-- Mobile Button -->
+                <div class="md:hidden flex items-center">
+                    <button @click="mobileMenu = !mobileMenu" class="text-gray-600 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
             </div>
-
-            <!-- Mobile Menu Button -->
-            <button @click="isOpen = !isOpen" class="md:hidden text-gray-600 focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
         </div>
 
-        <!-- Mobile Menu (Alpine.js) -->
-        <div x-show="isOpen" @click.away="isOpen = false" x-transition class="md:hidden bg-white border-t border-gray-100 absolute w-full shadow-lg">
-            <div class="flex flex-col p-6 space-y-4 text-center">
-                <a href="#home" @click="isOpen = false" class="text-gray-600 hover:text-brand-purple font-medium">Home</a>
-                <a href="#report" @click="isOpen = false" class="text-gray-600 hover:text-brand-purple font-medium">Report</a>
-                <a href="#fonti" @click="isOpen = false" class="text-gray-600 hover:text-brand-purple font-medium">Fonti</a>
-                <a href="#discussioni" @click="isOpen = false" class="text-gray-600 hover:text-brand-purple font-medium">Discussioni</a>
-                <a href="#info" @click="isOpen = false" class="text-gray-600 hover:text-brand-purple font-medium">Info</a>
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenu" class="md:hidden bg-white border-t border-gray-100" x-transition.origin.top>
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a @click="activeTab = 'home'; mobileMenu = false" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 cursor-pointer">Home</a>
+                <a @click="activeTab = 'report'; mobileMenu = false" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 cursor-pointer">Report</a>
+                <a @click="activeTab = 'fonti'; mobileMenu = false" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 cursor-pointer">Fonti</a>
+                <a @click="activeTab = 'discussioni'; mobileMenu = false" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 cursor-pointer">Discussioni</a>
+                <a @click="activeTab = 'info'; mobileMenu = false" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 cursor-pointer">Info</a>
             </div>
         </div>
     </nav>
 
-    <!-- SEZIONE 1: HOME (HERO & GRAFICI) -->
-    <section id="home" class="pt-32 pb-20 relative overflow-hidden">
-        <!-- Background Animation -->
-        <div class="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
-            <div class="absolute top-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-            <div class="absolute top-10 right-10 w-72 h-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-            <div class="absolute bottom-10 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-        </div>
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="pt-24 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
 
-        <div class="container mx-auto px-6 relative z-10">
-            <!-- Hero Text -->
-            <div class="text-center mb-20 animate-fade-in-up">
-                <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900">
-                    MIND THE <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-orange">GAP</span>
+        <!-- ======================= 1. HOME & DASHBOARD ======================= -->
+        <div x-show="activeTab === 'home'" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-5" x-transition:enter-end="opacity-100 translate-y-0">
+            
+            <!-- Hero -->
+            <div class="text-center py-16 lg:py-24 relative overflow-hidden">
+                <!-- Decorative Blobs -->
+                <div class="absolute top-0 left-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                <div class="absolute top-0 right-1/4 w-72 h-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+
+                <h1 class="relative text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
+                    MIND THE <span class="text-gradient">GAP</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-500 font-light max-w-3xl mx-auto leading-relaxed">
-                    Oltre il Recruiting. Analisi data-driven della <span class="font-medium text-gray-800">Leaky Pipeline</span> nel Tech Italiano.
+                <p class="relative text-xl md:text-2xl text-gray-500 max-w-3xl mx-auto font-light leading-relaxed animate-fade-in-up" style="animation-delay: 0.1s;">
+                    Oltre il Recruiting. Analisi data-driven della <span class="font-medium text-gray-800">'Leaky Pipeline'</span> nel Tech Italiano.
                 </p>
-                <div class="mt-10 flex justify-center gap-4">
-                    <a href="#report" class="px-8 py-3 bg-brand-purple hover:bg-purple-700 text-white rounded-full font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                        Leggi il Report
-                    </a>
-                    <a href="#info" class="px-8 py-3 bg-white text-gray-700 border border-gray-200 hover:border-brand-purple hover:text-brand-purple rounded-full font-medium transition shadow-sm hover:shadow-md">
-                        Contatta il Team
-                    </a>
+                
+                <div class="mt-8 flex justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.2s;">
+                    <button @click="activeTab = 'report'; window.scrollTo(0,0)" class="bg-slate-900 text-white px-8 py-3 rounded-full hover:bg-slate-800 transition shadow-lg text-sm font-semibold">Leggi il Report</button>
+                    <button @click="document.getElementById('charts-section').scrollIntoView({behavior: 'smooth'})" class="bg-white text-slate-900 border border-slate-200 px-8 py-3 rounded-full hover:border-slate-400 transition text-sm font-semibold">Vedi i Dati</button>
                 </div>
             </div>
 
-            <!-- Il Paradosso (Counter) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24 max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 0.2s;">
-                <div class="bg-white p-8 rounded-2xl card-shadow border-l-4 border-brand-purple hover:scale-105 transition duration-300">
-                    <div class="text-5xl font-bold text-brand-purple mb-2">16.5%</div>
-                    <p class="text-gray-500 uppercase tracking-wider text-sm font-semibold">Laureate ICT (MIUR)</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl card-shadow border-l-4 border-brand-orange hover:scale-105 transition duration-300">
-                    <div class="text-5xl font-bold text-brand-orange mb-2">30%</div>
-                    <p class="text-gray-500 uppercase tracking-wider text-sm font-semibold">Assunte Tech (DNF)</p>
-                </div>
-                <div class="col-span-1 md:col-span-2 text-center mt-4">
-                    <p class="text-lg text-gray-700 italic font-medium">"Le aziende assumono più di quanto l'università produca. Il problema <span class="underline decoration-brand-orange decoration-2">non è l'ingresso</span>."</p>
-                </div>
-            </div>
-
-            <!-- Dashboard Grafici -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Grafico 1: Pipeline Tech -->
-                <div class="bg-white p-6 rounded-2xl card-shadow animate-fade-in-up" style="animation-delay: 0.3s;">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Technology: Il Tubo Bucato</h3>
-                    <div class="relative h-64">
-                        <canvas id="pipelineTechChart"></canvas>
-                    </div>
-                    <div class="mt-4 text-center">
-                        <span class="inline-block px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold uppercase tracking-wide">Career Leak: -25 Punti</span>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-4 text-center">Il 30% entra, ma solo il 5% arriva al vertice.</p>
-                </div>
-
-                <!-- Grafico 2: Pipeline Aero -->
-                <div class="bg-white p-6 rounded-2xl card-shadow animate-fade-in-up" style="animation-delay: 0.4s;">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Aerospace: L'Eccezione</h3>
-                    <div class="relative h-64">
-                        <canvas id="pipelineAeroChart"></canvas>
-                    </div>
-                    <div class="mt-4 text-center">
-                        <span class="inline-block px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs font-bold uppercase tracking-wide">Leak Minimo: -5 Punti</span>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-4 text-center">Poche donne entrano, ma chi entra fa carriera.</p>
-                </div>
-
-                <!-- Grafico 3: Pay Gap -->
-                <div class="bg-white p-6 rounded-2xl card-shadow animate-fade-in-up" style="animation-delay: 0.5s;">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Pay Gap Benchmark</h3>
-                    <div class="relative h-64">
-                        <canvas id="paygapChart"></canvas>
-                    </div>
-                    <div class="mt-4 flex justify-center gap-2">
-                        <span class="inline-block px-2 py-1 bg-green-50 text-green-600 rounded text-xs font-bold">TLC: Virtuoso</span>
-                        <span class="inline-block px-2 py-1 bg-red-50 text-red-600 rounded text-xs font-bold">Electronics: Critico</span>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-4 text-center">Confronto Gap Interno vs Media Italia.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SEZIONE 2: REPORT (TESTO COMPLETO) -->
-    <section id="report" class="py-24 bg-white relative">
-        <div class="container mx-auto px-6 max-w-4xl">
-            <div class="text-center mb-16 animate-fade-in-up">
-                <span class="text-brand-purple font-semibold tracking-wider text-sm uppercase">Analisi Dettagliata</span>
-                <h2 class="text-4xl font-bold text-gray-900 mt-2 mb-6">Il Report Completo</h2>
-                <div class="w-20 h-1 bg-brand-orange mx-auto rounded-full"></div>
-            </div>
-
-            <!-- Contenuto Articolo -->
-            <article class="prose prose-lg prose-purple mx-auto text-gray-600 leading-loose animate-fade-in-up" style="animation-delay: 0.2s;">
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">1. Executive Summary</h3>
-                <p class="mb-8">
-                    Si crede comunemente che il Gender Gap nel Tech sia dovuto solo alla mancanza di laureate STEM. La nostra analisi dimostra che è falso. Le grandi aziende Tech italiane attraggono donne (<b>30%</b> assunte vs <b>16%</b> laureate), ma ne perdono il <b>24%</b> prima della dirigenza. Proponiamo di spostare gli investimenti dal recruiting alla retention.
-                </p>
-
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">2. La Leaky Pipeline</h3>
-                <p class="mb-8">
-                    Il settore Technology ha il tasso di abbandono manageriale più alto (-24 punti), mentre l'Aerospace ha un leak fisiologico (-5 punti) ma soffre in ingresso. Questo dimostra che non esiste una soluzione unica: il Tech ha un problema di <i>cultura interna</i>, l'Aerospace di <i>attrattività esterna</i>.
-                </p>
-
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">3. Il Pay Gap</h3>
-                <p class="mb-8">
-                    Sorprendentemente, le Grandi Aziende delle Telecomunicazioni pagano meglio della media Italia (Gap 7.5% vs 15.5%), risultando un modello virtuoso. Al contrario, l'Elettronica fa peggio del mercato (24.4% vs 20.7%), segnalando criticità strutturali nelle retribuzioni.
-                </p>
-
-                <div class="bg-gray-50 p-8 rounded-xl border border-gray-100 my-10">
-                    <h4 class="text-xl font-bold text-brand-purple mb-4 flex items-center gap-2">
-                        <i class="fas fa-lightbulb"></i> La Soluzione "Two-Speed"
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- NUOVA SEZIONE: Il Contesto del Gender Gap -->
+            <div class="max-w-5xl mx-auto mb-20 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="bg-white rounded-3xl p-8 md:p-10 card-shadow border border-gray-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                         <div>
-                            <strong class="block text-gray-800 mb-1">Aerospace: "Operation Take-Off"</strong>
-                            <p class="text-sm">Intervento nelle scuole e borse di studio per aumentare l'ingresso.</p>
+                            <span class="text-xs font-bold text-brand-orange uppercase tracking-wider mb-2 block">Il Contesto</span>
+                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Perché parliamo di Gender Gap?</h2>
+                            <p class="text-gray-600 leading-relaxed mb-4">
+                                Nonostante i progressi nel digitale (Indice DESI), le donne in Italia affrontano ancora barriere sistemiche. Non si tratta solo di <strong>accesso</strong> alle tecnologie, ma di un divario critico nelle <strong>carriere</strong> e nelle <strong>retribuzioni</strong>.
+                            </p>
+                            <p class="text-gray-600 leading-relaxed">
+                                I dati del World Economic Forum confermano che, al ritmo attuale, la parità economica è lontana decenni. La nostra analisi si concentra su dove il sistema fallisce: non all'ingresso, ma durante il percorso.
+                            </p>
                         </div>
-                        <div>
-                            <strong class="block text-gray-800 mb-1">Tech: "Protocollo Retention"</strong>
-                            <p class="text-sm">Welfare manageriale e audit delle promozioni per fermare l'uscita.</p>
+                        <div class="grid grid-cols-1 gap-4">
+                            <!-- Context Card 1 -->
+                            <div class="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
+                                <div class="bg-green-100 text-green-600 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-sm">Accesso (Risolto)</h4>
+                                    <p class="text-xs text-gray-500 mt-1">L'Italia ha colmato il gap nell'uso base delle tecnologie e nell'accesso all'istruzione.</p>
+                                </div>
+                            </div>
+                            <!-- Context Card 2 -->
+                            <div class="flex items-start gap-4 p-4 rounded-xl bg-red-50 border border-red-100">
+                                <div class="bg-red-100 text-red-600 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-sm">Carriera & Reddito (Critico)</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Le donne abbandonano il settore Tech prima di diventare manager (Leaky Pipeline) e guadagnano meno.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </article>
+            </div>
 
-            <!-- Download Button Funzionante -->
-            <div class="text-center mt-12">
-                <a href="data/MIND%20THE%20GAP_._Serendipity.pdf" download="MIND_THE_GAP_Serendipity.pdf" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition shadow-lg">
-                    <i class="fas fa-file-pdf text-xl"></i>
-                    Scarica il PDF del Report
-                </a>
+            <!-- Introduzione ai livelli (Pre-esistente) -->
+            <div class="max-w-4xl mx-auto mb-16 px-4 animate-fade-in-up" style="animation-delay: 0.3s;">
+                <div class="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl p-6 border border-purple-100 shadow-sm text-center">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">
+                        I 3 Livelli del Gap analizzati
+                    </h3>
+                    <div class="flex flex-wrap justify-center gap-4 text-sm mt-4">
+                        <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100 font-medium">1. Accesso (Input)</span>
+                        <span class="px-3 py-1 bg-brand-purple/10 text-brand-purple rounded-full border border-purple-100 font-medium">2. Carriera (Retention)</span>
+                        <span class="px-3 py-1 bg-red-50 text-red-600 rounded-full border border-red-100 font-medium">3. Reddito (Outcome)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Il Paradosso (KPI Cards) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-3xl card-shadow border border-gray-100 flex flex-col items-center text-center">
+                    <span class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-2">Offerta Formativa</span>
+                    <div class="text-5xl font-bold text-gray-800 mb-2">16.5%</div>
+                    <p class="text-gray-500">Donne Laureate ICT (MIUR)</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl card-shadow border border-gray-100 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-orange-500"></div>
+                    <span class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-2">Domanda Aziendale</span>
+                    <div class="text-5xl font-bold text-brand-purple mb-2">30.0%</div>
+                    <p class="text-gray-500">Donne Assunte nel Tech (DNF)</p>
+                    <div class="mt-4 text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                        <i class="fas fa-arrow-up mr-1"></i> Performance oltre l'offerta
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Visualization Section -->
+            <div id="charts-section" class="space-y-16">
+                
+                <!-- Chart 1: The Pipeline Leak (UPDATED) -->
+                <div class="bg-white p-8 md:p-12 rounded-3xl card-shadow border border-gray-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full z-0 opacity-50"></div>
+                    <div class="relative z-10 mb-8">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 class="text-2xl font-bold mb-2">1. The Leaky Pipeline: Il Crollo</h2>
+                                <p class="text-gray-500">Il settore Tech perde talenti femminili nel passaggio da Junior a Manager.</p>
+                            </div>
+                            <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase">Critical Issue</span>
+                        </div>
+                    </div>
+                    <div class="relative h-80 w-full">
+                        <canvas id="pipelineChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Chart 2: Recruiting Paradox -->
+                    <div class="bg-white p-8 rounded-3xl card-shadow border border-gray-100">
+                        <h3 class="text-xl font-bold mb-4">2. Il Paradosso del Recruiting</h3>
+                        <p class="text-sm text-gray-500 mb-6">Le aziende Tech attingono da bacini non-STEM per superare il gap educativo.</p>
+                        <div class="relative h-64 w-full">
+                            <canvas id="paradoxChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 3: Pay Gap -->
+                    <div class="bg-white p-8 rounded-3xl card-shadow border border-gray-100">
+                        <h3 class="text-xl font-bold mb-4">3. Outcome Economico (Pay Gap)</h3>
+                        <p class="text-sm text-gray-500 mb-6">Differenza salariale rispetto alla media Italia (linea rossa).</p>
+                        <div class="relative h-64 w-full">
+                            <canvas id="paygapChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
 
-    <!-- SEZIONE 3: FONTI (DATASET) -->
-    <section id="fonti" class="py-24 bg-brand-gray">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16 animate-fade-in-up">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Dati & Fonti</h2>
-                <p class="text-gray-500">Trasparenza totale. Ecco i dataset che abbiamo armonizzato.</p>
+        <!-- ======================= 2. REPORT ======================= -->
+        <div x-show="activeTab === 'report'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="flex flex-col lg:flex-row gap-12">
+                
+                <!-- Sidebar TOC -->
+                <aside class="lg:w-1/4 hidden lg:block">
+                    <div class="sticky top-28 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-900 mb-4 uppercase text-xs tracking-wider">Indice Report</h4>
+                        <ul class="space-y-3 text-sm text-gray-500">
+                            <li><a href="#summary" class="hover:text-brand-purple transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i> Executive Summary</a></li>
+                            <li><a href="#paradox" class="hover:text-brand-purple transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i> Il Paradosso Inatteso</a></li>
+                            <li><a href="#methodology" class="hover:text-brand-purple transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i> Metodologia & Dati</a></li>
+                            <li><a href="#pipeline" class="hover:text-brand-purple transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i> Pipeline Leak Analysis</a></li>
+                            <li><a href="#proposal" class="hover:text-brand-purple transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i> Proposta Strategica</a></li>
+                        </ul>
+                        <div class="mt-8 pt-6 border-t border-gray-100">
+                            <a href="https://github.com/LucaRovito60/GenderHack_Serendipity" target="_blank" class="w-full bg-gray-900 text-white py-2 rounded-lg text-xs font-semibold hover:bg-gray-800 transition flex items-center justify-center">
+                                <i class="fab fa-github mr-2"></i> Vai al report
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Text -->
+                <article class="lg:w-3/4 prose prose-slate prose-lg max-w-none">
+                    <span class="text-brand-purple font-semibold tracking-wider text-sm uppercase">Mind The Gap</span>
+                    <h1 class="text-4xl font-bold text-gray-900 mt-2 mb-8">Oltre il Recruiting: Analisi della 'Leaky Pipeline' nel Tech Italiano</h1>
+                    
+                    <div id="summary" class="mb-12">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">1. Executive Summary: Fallimento del Livello 3</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            L’analisi del divario di genere nel settore Tech italiano è tradizionalmente focalizzata sulla mancanza di donne laureate nei percorsi STEM. Si crede comunemente che la soluzione risieda esclusivamente nell'investire in campagne di sensibilizzazione. 
+                        </p>
+                        <p class="text-gray-600 leading-relaxed font-medium bg-purple-50 p-4 rounded-lg border-l-4 border-brand-purple">
+                            La nostra analisi dimostra che questa tesi è incompleta. L'Italia ha superato le sfide di Accesso e Competenze. La vera criticità è il <strong>Divario di Terzo Livello (Outcome)</strong>.
+                        </p>
+                    </div>
+                    <!-- (Contenuto Report abbreviato per brevità, mantenendo la struttura) -->
+                    <div id="paradox" class="mb-12">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">1.1 Il Paradosso Inatteso</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Mentre le donne rappresentano appena il <strong>16.5%</strong> dei laureati in discipline ICT, le grandi aziende Tech riescono ad assumerle al <strong>30%</strong>. Questa capacità di recruiting dimostra che le aziende sono già efficaci nell'attirare talenti. Il collo di bottiglia non è l'ingresso, bensì la ritenzione.
+                        </p>
+                    </div>
+                     <div id="pipeline" class="mb-12">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">1.3 La "Pipeline Leak"</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Il settore Technology si rivela il più ostile alla crescita femminile: i nostri dati misurano una <strong>Pipeline Leak disastrosa di 24 punti percentuali</strong>. Delle donne assunte, solo il 5-6% raggiunge posizioni manageriali.
+                        </p>
+                    </div>
+                     <div id="proposal" class="mb-12">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">4. La Nostra Proposta: Protocollo Retention</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Proponiamo un approccio dicotomico. Per il settore Technology, la soluzione è l'<strong>Audit Algoritmico Obbligatorio</strong> sui processi HR per smantellare le barriere strutturali invisibili che bloccano la carriera femminile.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- ======================= 3. FONTI ======================= -->
+        <div x-show="activeTab === 'fonti'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Data Sources & Metodologia</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto">La nostra analisi integra tre fonti dati primarie attraverso una rigorosa pipeline ETL in Python.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card MIUR -->
-                <div class="bg-white p-8 rounded-2xl card-shadow hover:-translate-y-2 transition duration-300">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-6">
-                        <i class="fas fa-university text-xl"></i>
+                <!-- Card 1 -->
+                <div class="bg-white p-8 rounded-2xl card-shadow border border-gray-100 flex flex-col h-full">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-brand-purple text-xl mb-6">
+                        <i class="fas fa-building"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">MIUR (Istruzione)</h3>
-                    <p class="text-gray-500 text-sm mb-6 h-20">Dati sui laureati italiani 2021-2023. Utilizzati per calcolare il bacino di utenza potenziale (Supply Side).</p>
-                    <a href="https://www.miur.gov.it/dati-e-statistiche" target="_blank" class="text-sm font-semibold text-blue-600 hover:underline">Vai alla fonte originale &rarr;</a>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <a href="data/Output_Graduates_Breakdown.csv" download class="w-full block text-center py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition flex items-center justify-center gap-2">
-                            <i class="fas fa-download"></i> Scarica CSV
-                        </a>
-                    </div>
+                    <h3 class="text-xl font-bold mb-2">Osservatorio DNF</h3>
+                    <p class="text-gray-500 text-sm flex-grow mb-6">Dati proprietari estratti dalle Dichiarazioni Non Finanziarie delle 200 maggiori aziende italiane (2021-2023).</p>
+                    <a href="https://www.osservatoriodnf.it/production/dashboard/dashboard2024.php?F=fase3&VAR=T&TYPEVAR=TOTAL" target="_blank" class="text-brand-purple font-medium text-sm hover:underline">Vai alla fonte <i class="fas fa-external-link-alt ml-1"></i></a>
                 </div>
 
-                <!-- Card DNF -->
-                <div class="bg-white p-8 rounded-2xl card-shadow hover:-translate-y-2 transition duration-300">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-brand-purple mb-6">
-                        <i class="fas fa-building text-xl"></i>
+                <!-- Card 2 -->
+                <div class="bg-white p-8 rounded-2xl card-shadow border border-gray-100 flex flex-col h-full">
+                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-brand-orange text-xl mb-6">
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Osservatorio DNF</h3>
-                    <p class="text-gray-500 text-sm mb-6 h-20">Analisi di 200+ Grandi Aziende Italiane. Dati su CdA, Management e Pay Gap, normalizzati dal nostro team.</p>
-                    <a href="https://www.osservatoriodnf.it/" target="_blank" class="text-sm font-semibold text-brand-purple hover:underline">Vai alla fonte originale &rarr;</a>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <a href="data/Output_STEM_Pipeline_Detailed.csv" download class="w-full block text-center py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition flex items-center justify-center gap-2">
-                            <i class="fas fa-download"></i> Scarica CSV
-                        </a>
-                    </div>
+                    <h3 class="text-xl font-bold mb-2">ISTAT Benchmark</h3>
+                    <p class="text-gray-500 text-sm flex-grow mb-6">Dati ufficiali sulle retribuzioni nazionali per settore. Benchmark per calcolare il "Delta Pay Gap".</p>
+                    <a href="http://dati.istat.it/" target="_blank" class="text-brand-orange font-medium text-sm hover:underline">Vai alla fonte <i class="fas fa-external-link-alt ml-1"></i></a>
                 </div>
 
-                <!-- Card ISTAT -->
-                <div class="bg-white p-8 rounded-2xl card-shadow hover:-translate-y-2 transition duration-300">
-                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-brand-orange mb-6">
-                        <i class="fas fa-chart-line text-xl"></i>
+                <!-- Card 3 -->
+                <div class="bg-white p-8 rounded-2xl card-shadow border border-gray-100 flex flex-col h-full">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 text-xl mb-6">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">ISTAT (Retribuzioni)</h3>
-                    <p class="text-gray-500 text-sm mb-6 h-20">Benchmark nazionale sulle retribuzioni orarie. Usato per calcolare il "Delta" di virtuosità delle aziende.</p>
-                    <a href="http://dati.istat.it/" target="_blank" class="text-sm font-semibold text-brand-orange hover:underline">Vai alla fonte originale &rarr;</a>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <a href="data/Output_STEM_PayGap_Diagnosis.csv" download class="w-full block text-center py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition flex items-center justify-center gap-2">
-                            <i class="fas fa-download"></i> Scarica CSV
-                        </a>
-                    </div>
+                    <h3 class="text-xl font-bold mb-2">MIUR Open Data</h3>
+                    <p class="text-gray-500 text-sm flex-grow mb-6">Dati sui laureati italiani per classe di laurea (FoET) e genere. Fondamentale per definire il bacino di Input.</p>
+                    <a href="https://dati-ustat.mur.gov.it/dataset/dati-per-bilancio-di-genere" target="_blank" class="text-blue-600 font-medium text-sm hover:underline">Vai alla fonte <i class="fas fa-external-link-alt ml-1"></i></a>
                 </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <a href="https://github.com/LucaRovito60/GenderHack_Serendipity" target="_blank" class="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg transition shadow-lg inline-flex items-center">
+                    <i class="fab fa-github mr-2"></i> Scarica Dataset Processati (CSV)
+                </a>
             </div>
         </div>
-    </section>
 
-    <!-- SEZIONE 4: DISCUSSIONI (SIMULATORE) -->
-    <section id="discussioni" class="py-24 bg-white">
-        <div class="container mx-auto px-6 max-w-3xl">
-            <div class="text-center mb-12 animate-fade-in-up">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Community Voice</h2>
-                <p class="text-gray-500">Unisciti al dibattito sul Gender Gap.</p>
-            </div>
-
-            <!-- Lista Discussioni -->
-            <div id="discussionList" class="space-y-6 mb-10">
-                <!-- Post 1 -->
-                <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-md transition cursor-pointer">
-                    <div class="flex items-center gap-2 mb-2 text-xs text-gray-400">
-                        <span>• Postato da <span class="font-bold text-gray-700">@DataNerd99</span> • 2 ore fa</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-800 mb-2">Perché l'Elettronica ha un gap così alto?</h3>
-                    <p class="text-gray-600 text-sm mb-4">I dati mostrano un 24% di gap. Qualcuno lavora nel settore e può confermare se è culturale o strutturale?</p>
-                    <div class="flex gap-4 text-gray-400 text-sm">
-                        <span class="hover:text-brand-purple transition"><i class="far fa-comment-alt mr-1"></i> 12 Commenti</span>
-                        <span class="hover:text-brand-purple transition"><i class="far fa-heart mr-1"></i> 45 Like</span>
-                    </div>
+        <!-- ======================= 4. DISCUSSIONI ======================= -->
+        <div x-show="activeTab === 'discussioni'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="max-w-3xl mx-auto relative">
+                
+                <!-- Toast Notification -->
+                <div id="toast-notification" class="fixed top-24 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Commento pubblicato con successo!</span>
                 </div>
 
-                <!-- Post 2 -->
-                <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-md transition cursor-pointer">
-                    <div class="flex items-center gap-2 mb-2 text-xs text-gray-400">
-                        <span>• Postato da <span class="font-bold text-gray-700">@HR_Manager_Sara</span> • 5 ore fa</span>
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Community Hub</h2>
+                        <p class="text-gray-500 mt-2">Unisciti alla conversazione sul Gender Gap nel Tech.</p>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-800 mb-2">Audit delle Promozioni: funziona davvero?</h3>
-                    <p class="text-gray-600 text-sm mb-4">Nel report si parla di audit algoritmici. Nella mia azienda stiamo provando a renderli anonimi...</p>
-                    <div class="flex gap-4 text-gray-400 text-sm">
-                        <span class="hover:text-brand-purple transition"><i class="far fa-comment-alt mr-1"></i> 8 Commenti</span>
-                        <span class="hover:text-brand-purple transition"><i class="far fa-heart mr-1"></i> 23 Like</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input Form (Simulato) -->
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 relative overflow-hidden">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">Avvia una nuova discussione</h3>
-                <div class="flex gap-4">
-                    <input type="text" id="commentInput" placeholder="Scrivi il tuo pensiero o una domanda..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-purple focus:ring-2 focus:ring-purple-100 transition">
-                    <button onclick="addComment()" class="bg-brand-purple hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition shadow-md whitespace-nowrap">
-                        Pubblica
+                    <button onclick="document.getElementById('discussion-input').focus()" class="bg-brand-purple text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition">
+                        <i class="fas fa-plus mr-2"></i> Nuovo Post
                     </button>
                 </div>
-                <!-- Feedback Toast (Nascosto) -->
-                <div id="toast" class="absolute top-4 right-4 bg-green-500 text-white text-sm px-4 py-2 rounded-lg shadow-lg opacity-0 transition transform translate-y-[-20px]">
-                    <i class="fas fa-check-circle mr-2"></i> Pubblicato!
+
+                <!-- Empty State -->
+                <div id="empty-state" class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+                    <div class="text-gray-300 text-5xl mb-4"><i class="far fa-comments"></i></div>
+                    <h3 class="text-lg font-medium text-gray-600">Nessuna discussione avviata</h3>
+                    <p class="text-gray-400 text-sm mt-1">Sii il primo a condividere la tua opinione su questi dati!</p>
+                </div>
+
+                <!-- Thread List (Inizialmente vuota) -->
+                <div class="space-y-4" id="discussion-list">
+                    <!-- I commenti verranno aggiunti qui via JS -->
+                </div>
+
+                <!-- Input Area -->
+                <div class="mt-8 bg-gray-50 p-4 rounded-xl border border-gray-200 sticky bottom-4 shadow-lg">
+                    <div class="flex gap-2">
+                        <input type="text" id="discussion-input" placeholder="Avvia una nuova discussione..." class="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
+                        <button id="discussion-submit" class="bg-gray-900 text-white px-6 rounded-lg hover:bg-gray-700 transition font-medium text-sm">Invia</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- SEZIONE 5: INFO (TEAM & CONTATTI) -->
-    <section id="info" class="py-24 relative overflow-hidden bg-white">
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-16 animate-fade-in-up">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight">Chi Siamo</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
-                    Il team <span class="font-semibold text-brand-purple">Serendipity</span>. Quattro menti, una missione: usare i dati per rompere il tetto di cristallo.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-                <!-- Membro 1: Andrea Zollino -->
-                <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.1s;">
-                    <div class="relative w-32 h-32 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-brand-purple opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
-                        <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
-                            <i class="fas fa-user-tie text-4xl text-gray-400"></i>
-                        </div>
-                        <div class="absolute bottom-0 right-0 bg-brand-orange text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">ENG</div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-1">Andrea Zollino</h3>
-                    <p class="text-brand-purple font-medium mb-3">Data Architect</p>
-                    <p class="text-gray-500 text-sm leading-relaxed">Colui che ha domato il caos dei CSV grezzi, costruendo le fondamenta solide del nostro database.</p>
-                </div>
-
-                <!-- Membro 2: Luca Rovito -->
-                <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="relative w-32 h-32 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-blue-500 opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
-                        <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
-                            <i class="fas fa-user-glasses text-4xl text-gray-400"></i>
-                        </div>
-                        <div class="absolute bottom-0 right-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">ANA</div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-1">Luca Rovito</h3>
-                    <p class="text-blue-600 font-medium mb-3">The Analyst</p>
-                    <p class="text-gray-500 text-sm leading-relaxed">Il cacciatore di insight. Ha scoperto il 'Paradosso del Recruiting' e mappato i benchmark ISTAT.</p>
-                </div>
-
-                <!-- Membro 3: Alexandro Tornese -->
-                <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.3s;">
-                    <div class="relative w-32 h-32 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-pink-500 opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
-                        <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
-                            <i class="fas fa-user-pen text-4xl text-gray-400"></i>
-                        </div>
-                        <div class="absolute bottom-0 right-0 bg-pink-500 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">VIZ</div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-1">Alexandro Tornese</h3>
-                    <p class="text-pink-600 font-medium mb-3">The Viz Creator</p>
-                    <p class="text-gray-500 text-sm leading-relaxed">L'artista dei dati. Ha trasformato numeri freddi in storie visive accessibili e d'impatto.</p>
-                </div>
-
-                <!-- Membro 4: Mattia Lazoi -->
-                <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.4s;">
-                    <div class="relative w-32 h-32 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-green-500 opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
-                        <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
-                            <i class="fas fa-user-astronaut text-4xl text-gray-400"></i>
-                        </div>
-                        <div class="absolute bottom-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">STR</div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-1">Mattia Lazoi</h3>
-                    <p class="text-green-600 font-medium mb-3">The Strategist</p>
-                    <p class="text-gray-500 text-sm leading-relaxed">La voce del progetto. Ha unito i puntini per creare la strategia 'Two-Speed' e il report finale.</p>
-                </div>
-            </div>
-
-            <!-- Contatti e Link -->
-            <div class="max-w-4xl mx-auto bg-gray-900 rounded-3xl p-12 text-center text-white relative overflow-hidden animate-fade-in-up">
-                <!-- Decorative blobs -->
-                <div class="absolute top-0 left-0 w-64 h-64 bg-brand-purple opacity-20 rounded-full filter blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-                <div class="absolute bottom-0 right-0 w-64 h-64 bg-brand-orange opacity-20 rounded-full filter blur-3xl translate-x-1/2 translate-y-1/2"></div>
+        <!-- ======================= 5. INFO & TEAM ======================= -->
+        <div x-show="activeTab === 'info'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-12">Il Team di Ricerca</h2>
                 
-                <h3 class="text-2xl font-bold mb-8 relative z-10">Mettiamoci in contatto</h3>
-                <div class="flex flex-wrap justify-center gap-6 relative z-10">
-                    <a href="mailto:team@serendipity.it" class="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl transition border border-white/10 group">
-                        <div class="w-10 h-10 rounded-full bg-brand-orange flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="far fa-envelope text-white"></i>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                    <!-- Membro 1: Andrea Zollino -->
+                    <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="relative w-32 h-32 mx-auto mb-6">
+                            <div class="absolute inset-0 bg-brand-purple opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
+                            <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
+                                <i class="fas fa-user-tie text-4xl text-gray-400"></i>
+                            </div>
+                            <div class="absolute bottom-0 right-0 bg-brand-orange text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">ENG</div>
                         </div>
-                        <div class="text-left">
-                            <p class="text-xs text-gray-400">Scrivici una mail</p>
-                            <p class="font-medium">team@serendipity.it</p>
-                        </div>
-                    </a>
+                        <h3 class="text-xl font-bold text-gray-900 mb-1">Andrea Zollino</h3>
+                        <p class="text-brand-purple font-medium mb-3">Data Architect</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">Colui che ha domato il caos dei CSV grezzi, costruendo le fondamenta solide del nostro database.</p>
+                    </div>
 
-                    <a href="https://github.com/LucaRovito60/GenderHack_Serendipity" target="_blank" class="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl transition border border-white/10 group">
-                        <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fab fa-github text-white"></i>
+                    <!-- Membro 2: Luca Rovito -->
+                    <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="relative w-32 h-32 mx-auto mb-6">
+                            <div class="absolute inset-0 bg-blue-500 opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
+                            <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
+                                <i class="fas fa-user-glasses text-4xl text-gray-400"></i>
+                            </div>
+                            <div class="absolute bottom-0 right-0 bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">ANA</div>
                         </div>
-                        <div class="text-left">
-                            <p class="text-xs text-gray-400">Esplora il Codice</p>
-                            <p class="font-medium">LucaRovito60/GenderHack_Serendipity</p>
-                        </div>
-                    </a>
+                        <h3 class="text-xl font-bold text-gray-900 mb-1">Luca Rovito</h3>
+                        <p class="text-blue-600 font-medium mb-3">The Analyst</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">Il cacciatore di insight. Ha scoperto il 'Paradosso del Recruiting' e mappato i benchmark ISTAT.</p>
+                    </div>
 
-                    <a href="#" class="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md px-6 py-4 rounded-xl transition border border-white/10 group">
-                        <div class="w-10 h-10 rounded-full bg-pink-600 flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fab fa-instagram text-white"></i>
+                    <!-- Membro 3: Alexandro Tornese -->
+                    <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="relative w-32 h-32 mx-auto mb-6">
+                            <div class="absolute inset-0 bg-pink-500 opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
+                            <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
+                                <i class="fas fa-user-pen text-4xl text-gray-400"></i>
+                            </div>
+                            <div class="absolute bottom-0 right-0 bg-pink-500 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">VIZ</div>
                         </div>
-                        <div class="text-left">
-                            <p class="text-xs text-gray-400">Seguici su IG</p>
-                            <p class="font-medium">@GenderHack_Serendipity</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-1">Alexandro Tornese</h3>
+                        <p class="text-pink-600 font-medium mb-3">The Viz Creator</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">L'artista dei dati. Ha trasformato numeri freddi in storie visive accessibili e d'impatto.</p>
+                    </div>
+
+                    <!-- Membro 4: Mattia Lazoi -->
+                    <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="relative w-32 h-32 mx-auto mb-6">
+                            <div class="absolute inset-0 bg-green-500 opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
+                            <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative z-10">
+                                <i class="fas fa-user-astronaut text-4xl text-gray-400"></i>
+                            </div>
+                            <div class="absolute bottom-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">STR</div>
                         </div>
-                    </a>
+                        <h3 class="text-xl font-bold text-gray-900 mb-1">Mattia Lazoi</h3>
+                        <p class="text-green-600 font-medium mb-3">The Strategist</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">La voce del progetto. Ha unito i puntini per creare la strategia 'Two-Speed' e il report finale.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Footer -->
-            <div class="mt-20 pt-8 border-t border-gray-200 text-center text-gray-400 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
-                <p>&copy; 2025 Team Serendipity. Sviluppato per Gender Hack 2025.</p>
-                <div class="flex gap-6 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition duration-500">
-                    <span class="font-bold text-gray-600">UNISALENTO</span>
-                    <span class="font-bold text-gray-600">IFAB</span>
-                    <span class="font-bold text-gray-600">WIBD</span>
+                <div class="border-t border-gray-200 pt-12">
+                    <h3 class="text-lg font-semibold mb-6">Contattaci</h3>
+                    <div class="flex justify-center gap-6 mb-12">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand-purple hover:text-white transition"><i class="fas fa-envelope"></i></a>
+                        <a href="https://www.instagram.com/mindthegapinsights/?igsh=bG9uMWJ6eW1zN252&utm_source=qr" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-pink-600 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://github.com/LucaRovito60/GenderHack_Serendipity" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-black hover:text-white transition"><i class="fab fa-github"></i></a>
+                    </div>
+                    
+                    <div class="flex justify-center items-center gap-8 grayscale opacity-50 hover:opacity-100 transition duration-500">
+                        <!-- Placeholder Logos for Institutions -->
+                        <span class="text-sm font-bold tracking-widest">UNIVERSITÀ DEL SALENTO</span>
+                        <span class="text-sm font-bold tracking-widest">GENDER HACK</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- SCRIPTS GRAFICI E INTERAZIONI -->
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-gray-100 py-8 text-center text-xs text-gray-400">
+        <p>&copy; 2024 Mind The Gap Project. All rights reserved.</p>
+    </footer>
+
+    <!-- LOGICA JAVASCRIPT & CHART.JS -->
     <script>
-        // --- 1. SIMULAZIONE DISCUSSIONI ---
-        function addComment() {
-            const inputField = document.getElementById('commentInput');
-            const list = document.getElementById('discussionList');
-            const toast = document.getElementById('toast');
-            const text = inputField.value.trim();
+        // -------------------------
+        // 1. CHART.JS CONFIGURATION
+        // -------------------------
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
 
+        // PLUGIN: Disegna linea verticale (Media Italia) - Grafico 3
+        const verticalLinePlugin = {
+            id: 'verticalLine',
+            afterDatasetsDraw: (chart, args, options) => {
+                if (chart.canvas.id !== 'paygapChart') return;
+                
+                const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+                const xValue = x.getPixelForValue(20.7); 
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.moveTo(xValue, top);
+                ctx.lineTo(xValue, bottom);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ef4444'; 
+                ctx.stroke();
+                
+                ctx.fillStyle = '#ef4444';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 10px Inter';
+                ctx.fillText('MEDIA IT (20.7%)', xValue, top - 10);
+                ctx.restore();
+            }
+        };
+
+        // PLUGIN: Disegna freccia Leak - Grafico 1
+        const leakPlugin = {
+            id: 'leakAnnotation',
+            afterDatasetsDraw: (chart) => {
+                if (chart.canvas.id !== 'pipelineChart') return;
+
+                const { ctx } = chart;
+                const meta = chart.getDatasetMeta(0);
+                
+                // Coordinate Barra 1 (Ingresso) e Barra 2 (Manager)
+                const bar1 = meta.data[0];
+                const bar2 = meta.data[1];
+
+                if(!bar1 || !bar2) return;
+
+                const x1 = bar1.x;
+                const y1 = bar1.y; // Top di barra 1
+                const x2 = bar2.x;
+                const y2 = bar2.y; // Top di barra 2
+
+                ctx.save();
+                
+                // Disegna freccia o linea che mostra il calo
+                ctx.beginPath();
+                ctx.moveTo(x1 + (bar1.width/2) + 5, y1);
+                ctx.lineTo(x2 + (bar2.width/2), y1); // Linea orizzontale dal top di 1
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)'; // Rosso trasparente
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+
+                // Disegna linea verticale rossa evidente che scende
+                ctx.beginPath();
+                ctx.moveTo(x2, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = '#EF4444';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([]);
+                ctx.stroke();
+
+                // Label "-25%"
+                ctx.fillStyle = '#EF4444';
+                ctx.font = 'bold 14px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText('-25% LEAK', x2, (y1 + y2) / 2);
+                
+                ctx.restore();
+            }
+        };
+
+        Chart.register(verticalLinePlugin, leakPlugin);
+
+        // Chart 1: Pipeline Chart (Visualizzazione Leak)
+        const ctxPipeline = document.getElementById('pipelineChart').getContext('2d');
+        new Chart(ctxPipeline, {
+            type: 'bar',
+            data: {
+                labels: ['Ingresso (Assunzioni)', 'Vertice (Manager)'],
+                datasets: [
+                    {
+                        label: '% Donne',
+                        data: [30, 5], // Dati: 30% Ingresso, 5% Manager
+                        backgroundColor: (c) => {
+                            return c.dataIndex === 0 ? '#7C3AED' : '#EF4444'; // Viola vs Rosso (Allarme)
+                        },
+                        borderRadius: 8,
+                        barPercentage: 0.6,
+                        hoverBackgroundColor: (c) => {
+                            return c.dataIndex === 0 ? '#6D28D9' : '#DC2626';
+                        }
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { 
+                        callbacks: { label: (c) => c.raw + '%' },
+                        backgroundColor: 'rgba(29, 29, 31, 0.9)',
+                        padding: 12
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 35, grid: { color: '#f1f5f9' }, title: { display: true, text: '% Donne' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Chart 2: Paradox Chart (Donut)
+        const ctxParadox = document.getElementById('paradoxChart').getContext('2d');
+        new Chart(ctxParadox, {
+            type: 'doughnut',
+            data: {
+                labels: ['Donne Laureate ICT', 'Donne Assunte Tech', 'Gap Positivo'],
+                datasets: [{
+                    data: [16.5, 13.5, 0], // 16.5 + 13.5 = 30
+                    backgroundColor: ['#94a3b8', '#F97316', 'transparent'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: { display: true, position: 'right' },
+                    tooltip: { 
+                        callbacks: { 
+                            label: function(context) {
+                                if(context.label === 'Donne Assunte Tech') return ' Boost Recruiting: +13.5%';
+                                return ' ' + context.raw + '%';
+                            }
+                        } 
+                    }
+                }
+            },
+            plugins: [{
+                id: 'textCenter',
+                afterDraw: function(chart) {
+                    if (chart.config.type !== 'doughnut') return;
+                    var ctx = chart.ctx;
+                    var width = chart.chartArea.width;
+                    var height = chart.chartArea.height;
+                    var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                    var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                    ctx.restore();
+                    var fontSize = (height / 100).toFixed(2);
+                    ctx.font = "bold " + fontSize + "em sans-serif";
+                    ctx.textBaseline = "middle";
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "#1e293b";
+                    ctx.fillText("+13.5%", centerX, centerY);
+                    ctx.save();
+                }
+            }]
+        });
+
+        // Chart 3: Pay Gap Chart
+        const ctxPaygap = document.getElementById('paygapChart').getContext('2d');
+        new Chart(ctxPaygap, {
+            type: 'bar',
+            indexAxis: 'y',
+            data: {
+                labels: ['Electronics (Critico)', 'Media Italia', 'TLC (Virtuoso)'],
+                datasets: [{
+                    label: 'Gender Pay Gap (%)',
+                    data: [24.4, 20.7, 7.5],
+                    backgroundColor: (context) => {
+                        const val = context.raw;
+                        if (val > 22) return '#ef4444'; 
+                        if (val === 20.7) return '#e2e8f0'; 
+                        return '#22c55e'; 
+                    },
+                    borderRadius: 6,
+                    barThickness: 25
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: { label: (c) => 'Gap Salariale: ' + c.raw + '%' }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: '#f1f5f9' }, max: 30 },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // -------------------------
+        // 2. DISCUSSIONS INTERACTIVITY
+        // -------------------------
+        const submitBtn = document.getElementById('discussion-submit');
+        const inputField = document.getElementById('discussion-input');
+        const list = document.getElementById('discussion-list');
+        const emptyState = document.getElementById('empty-state');
+        const toast = document.getElementById('toast-notification');
+
+        submitBtn.addEventListener('click', postComment);
+        inputField.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') postComment();
+        });
+
+        function postComment() {
+            const text = inputField.value.trim();
             if (text === "") return;
+
+            // Rimuovi Empty State se presente
+            if (emptyState && !emptyState.classList.contains('hidden')) {
+                emptyState.classList.add('hidden');
+            }
 
             // Crea elemento HTML per il nuovo commento
             const newComment = document.createElement('div');
@@ -508,7 +774,7 @@
                     <span class="bg-purple-50 text-brand-purple px-2 py-0.5 rounded font-medium">Nuovo</span>
                     <span>• Postato da <span class="font-bold text-gray-700">@GuestUser</span> • Adesso</span>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">Nuova opinione sulla Pipeline</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Opinione Utente</h3>
                 <p class="text-gray-600 text-sm mb-4">${text}</p>
                 <div class="flex gap-4 text-gray-400 text-sm">
                     <span class="hover:text-purple-600"><i class="far fa-comment-alt mr-1"></i> 0 Commenti</span>
@@ -523,100 +789,11 @@
             inputField.value = "";
 
             // Mostra Toast
-            toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            toast.classList.add('show');
             setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                toast.classList.remove('show');
             }, 3000);
         }
-
-        // --- 2. CONFIGURAZIONE GRAFICI CHART.JS ---
-        
-        // 1. Pipeline Tech (Barre che scendono)
-        const ctxTech = document.getElementById('pipelineTechChart').getContext('2d');
-        new Chart(ctxTech, {
-            type: 'bar',
-            data: {
-                labels: ['Ingresso (Assunte)', 'Vertice (Manager)'],
-                datasets: [{
-                    label: '% Donne',
-                    data: [30, 5],
-                    backgroundColor: ['#7C3AED', '#EF4444'], // Viola -> Rosso
-                    borderRadius: 8,
-                    barThickness: 50
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true, max: 40, grid: { display: false } },
-                    x: { grid: { display: false } }
-                }
-            }
-        });
-
-        // 2. Pipeline Aerospace (Barre stabili)
-        const ctxAero = document.getElementById('pipelineAeroChart').getContext('2d');
-        new Chart(ctxAero, {
-            type: 'bar',
-            data: {
-                labels: ['Ingresso (Assunte)', 'Vertice (Manager)'],
-                datasets: [{
-                    label: '% Donne',
-                    data: [15, 10],
-                    backgroundColor: ['#F97316', '#22C55E'], // Arancio -> Verde
-                    borderRadius: 8,
-                    barThickness: 50
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true, max: 40, grid: { display: false } },
-                    x: { grid: { display: false } }
-                }
-            }
-        });
-
-        // 3. Pay Gap Chart (Horizontal Bar)
-        const ctxPaygap = document.getElementById('paygapChart').getContext('2d');
-        new Chart(ctxPaygap, {
-            type: 'bar',
-            indexAxis: 'y',
-            data: {
-                labels: ['Electronics (Critico)', 'Media Italia', 'TLC (Virtuoso)'],
-                datasets: [{
-                    label: 'Gender Pay Gap (%)',
-                    data: [24.4, 20.7, 7.5],
-                    backgroundColor: (context) => {
-                        const val = context.raw;
-                        if (val > 20) return '#ef4444'; // Red
-                        if (val < 10) return '#22c55e'; // Green
-                        return '#f59e0b'; // Orange
-                    },
-                    borderRadius: 6,
-                    barThickness: 20
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                    y: { grid: { display: false } }
-                }
-            }
-        });
     </script>
 </body>
 </html>
