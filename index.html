@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="it" class="scroll-smooth">
 <head>
@@ -211,7 +212,7 @@
                 </div>
             </div>
 
-            <!-- Introduzione ai livelli (Pre-esistente) -->
+            <!-- Introduzione ai livelli -->
             <div class="max-w-4xl mx-auto mb-16 px-4 animate-fade-in-up" style="animation-delay: 0.3s;">
                 <div class="bg-gradient-to-br from-white to-purple-50/50 rounded-2xl p-6 border border-purple-100 shadow-sm text-center">
                     <h3 class="text-lg font-bold text-gray-900 mb-2">
@@ -246,7 +247,7 @@
             <!-- Data Visualization Section -->
             <div id="charts-section" class="space-y-16">
                 
-                <!-- Chart 1: The Pipeline Leak (UPDATED) -->
+                <!-- Chart 1: The Pipeline Leak -->
                 <div class="bg-white p-8 md:p-12 rounded-3xl card-shadow border border-gray-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full z-0 opacity-50"></div>
                     <div class="relative z-10 mb-8">
@@ -301,7 +302,6 @@
                             <li><a href="#proposal" class="hover:text-brand-purple transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i> Proposta Strategica</a></li>
                         </ul>
                         <div class="mt-8 pt-6 border-t border-gray-100">
-                            <!-- BOTTONE AGGIORNATO -->
                             <a href="data/MIND%20THE%20GAP_._Serendipity.pdf" download="MIND_THE_GAP_Serendipity.pdf" class="w-full bg-gray-900 text-white py-3 rounded-lg text-xs font-semibold hover:bg-gray-800 transition flex items-center justify-center">
                                 <i class="fas fa-file-pdf mr-2"></i> Scarica il report
                             </a>
@@ -323,7 +323,7 @@
                             La nostra analisi dimostra che questa tesi è incompleta. L'Italia ha superato le sfide di Accesso e Competenze. La vera criticità è il <strong>Divario di Terzo Livello (Outcome)</strong>.
                         </p>
                     </div>
-                    <!-- (Contenuto Report abbreviato per brevità, mantenendo la struttura) -->
+                    
                     <div id="paradox" class="mb-12">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">1.1 Il Paradosso Inatteso</h2>
                         <p class="text-gray-600 leading-relaxed mb-4">
@@ -413,19 +413,35 @@
                 </div>
 
                 <!-- Empty State -->
-                <div id="empty-state" class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+                <div id="empty-state" class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300 mb-8">
                     <div class="text-gray-300 text-5xl mb-4"><i class="far fa-comments"></i></div>
                     <h3 class="text-lg font-medium text-gray-600">Nessuna discussione avviata</h3>
                     <p class="text-gray-400 text-sm mt-1">Sii il primo a condividere la tua opinione su questi dati!</p>
                 </div>
 
-                <!-- Thread List (Inizialmente vuota) -->
-                <div class="space-y-4" id="discussion-list">
+                <!-- Thread List -->
+                <div class="space-y-4 mb-8" id="discussion-list">
                     <!-- I commenti verranno aggiunti qui via JS -->
                 </div>
 
+                <!-- CALL TO ACTION SONDAGGIO (NEW) -->
+                <div class="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 card-shadow animate-fade-in-up">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-brand-orange text-white rounded-full flex items-center justify-center flex-shrink-0 text-xl shadow-md">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg">La tua voce conta</h3>
+                            <p class="text-gray-600 text-sm">Aiutaci a mappare le barriere invisibili. Compila il sondaggio anonimo sulla carriera.</p>
+                        </div>
+                    </div>
+                    <a href="sondaggio.html" class="bg-brand-orange text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition shadow-lg whitespace-nowrap text-sm flex items-center">
+                        Partecipa al Sondaggio <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
                 <!-- Input Area -->
-                <div class="mt-8 bg-gray-50 p-4 rounded-xl border border-gray-200 sticky bottom-4 shadow-lg">
+                <div class="mt-8 bg-gray-50 p-4 rounded-xl border border-gray-200 sticky bottom-4 shadow-lg z-20">
                     <div class="flex gap-2">
                         <input type="text" id="discussion-input" placeholder="Avvia una nuova discussione..." class="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
                         <button id="discussion-submit" class="bg-gray-900 text-white px-6 rounded-lg hover:bg-gray-700 transition font-medium text-sm">Invia</button>
@@ -434,7 +450,7 @@
             </div>
         </div>
 
-<!-- SEZIONE 5: INFO (TEAM & CONTATTI) - FIXATA -->
+<!-- SEZIONE 5: INFO (TEAM & CONTATTI) -->
     <section id="info" class="py-24 relative overflow-hidden bg-white">
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-16 animate-fade-in-up">
@@ -449,10 +465,7 @@
                 <div class="bg-gray-50 rounded-2xl p-8 text-center card-shadow border border-gray-100 transition hover:-translate-y-2 group animate-fade-in-up" style="animation-delay: 0.1s;">
                     <div class="relative w-32 h-32 mx-auto mb-6">
                         <div class="absolute inset-0 bg-brand-purple opacity-10 rounded-full blur-xl group-hover:opacity-20 transition"></div>
-                        <!-- Immagine con fallback -->
                         <div class="w-full h-full rounded-full overflow-hidden border-4 border-white shadow-lg relative z-10 bg-gray-200 flex items-center justify-center">
-                             <!-- Se hai la foto, scommenta la riga sotto e metti il percorso giusto -->
-                             <!-- <img src="img/andrea.jpg" alt="Andrea Zollino" class="w-full h-full object-cover"> -->
                              <i class="fas fa-user-tie text-4xl text-gray-400"></i>
                         </div>
                         <div class="absolute bottom-0 right-0 bg-brand-orange text-white text-xs px-2 py-1 rounded-full shadow-md z-20 font-bold">ENG</div>

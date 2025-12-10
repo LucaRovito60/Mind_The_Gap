@@ -1,0 +1,240 @@
+<!-- sondaggio.html -->
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sondaggio | MIND THE GAP</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Configurazione Tailwind e Stili Personalizzati -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#7C3AED',
+                            orange: '#F97316',
+                            gray: '#F5F5F7',
+                            dark: '#1e293b'
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FBFBFD;
+            color: #1D1D1F;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #7C3AED 0%, #F97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
+        /* Custom form focus rings */
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+    </style>
+</head>
+<body x-data="{ mobileMenu: false, leadershipRenounced: false }">
+
+    <!-- NAVBAR (Collegata a index.html) -->
+    <nav class="fixed w-full z-50 glass-nav top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="index.html" class="flex-shrink-0 cursor-pointer">
+                    <span class="text-xl font-bold tracking-tight">MIND THE <span class="text-gradient">GAP</span></span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Home</a>
+                    <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Report</a>
+                    <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Fonti</a>
+                    <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Discussioni</a>
+                    <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Info</a>
+                </div>
+
+                <!-- Mobile Button -->
+                <div class="md:hidden flex items-center">
+                    <button @click="mobileMenu = !mobileMenu" class="text-gray-600 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenu" class="md:hidden bg-white border-t border-gray-100" x-transition.origin.top>
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-50 cursor-pointer">Torna alla Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-28 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen relative overflow-hidden">
+        
+        <!-- Decorative Blobs (Background) -->
+        <div class="absolute top-20 left-10 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob -z-10"></div>
+        <div class="absolute bottom-20 right-10 w-64 h-64 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000 -z-10"></div>
+
+        <div class="max-w-3xl mx-auto animate-fade-in-up">
+            
+            <div class="text-center mb-10">
+                <span class="text-brand-purple font-semibold tracking-wider text-sm uppercase">Sondaggio Anonimo</span>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">La Tua Esperienza nel Mondo del Lavoro</h1>
+                <p class="text-gray-500 mt-4 max-w-xl mx-auto">Aiutaci a raccogliere dati qualitativi per comprendere meglio le dinamiche del Gender Gap oltre i numeri ufficiali.</p>
+            </div>
+
+            <!-- FORM CARD -->
+            <div class="bg-white p-8 md:p-10 rounded-3xl card-shadow border border-gray-100 relative">
+                
+                <form action="https://formspree.io/f/xdkqwdwv" method="POST" class="space-y-8">
+                    
+                    <!-- Section 1: Anagrafica Base -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">Genere</label>
+                            <div class="relative">
+                                <select id="gender" name="gender" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="donna">Donna</option>
+                                    <option value="uomo">Uomo</option>
+                                    <option value="non-binary">Non-binary / Altro</option>
+                                    <option value="prefer-not-say">Preferisco non specificare</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="sector" class="block text-sm font-medium text-gray-700 mb-2">Settore Lavorativo</label>
+                            <div class="relative">
+                                <select id="sector" name="sector" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="tech_it">Technology / IT</option>
+                                    <option value="engineering">Ingegneria / Aerospazio</option>
+                                    <option value="finance">Finanza / Consulenza</option>
+                                    <option value="education">Istruzione / Ricerca</option>
+                                    <option value="healthcare">Sanità</option>
+                                    <option value="other">Altro</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Ruolo Attuale</label>
+                        <input type="text" id="role" name="role" placeholder="Es. Senior Backend Developer, Project Manager..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors" required>
+                    </div>
+
+                    <hr class="border-gray-100">
+
+                    <!-- Section 2: Leadership & Ostacoli -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Hai mai rinunciato consapevolmente a una posizione manageriale o a una promozione?</label>
+                        <div class="flex gap-6">
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="radio" name="renounced_leadership" value="yes" @click="leadershipRenounced = true" class="w-5 h-5 text-brand-purple border-gray-300 focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition">Sì, è successo</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input type="radio" name="renounced_leadership" value="no" @click="leadershipRenounced = false" class="w-5 h-5 text-brand-purple border-gray-300 focus:ring-brand-purple cursor-pointer" checked>
+                                <span class="text-gray-600 group-hover:text-gray-900 transition">No, mai</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Conditional Textarea (Alpine x-show) -->
+                    <div x-show="leadershipRenounced" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                        <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Se sì, qual è stata la motivazione principale?</label>
+                        <textarea id="reason" name="renounce_reason" rows="3" placeholder="Es. Carico di lavoro eccessivo, difficoltà work-life balance, ambiente tossico..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="obstacles" class="block text-sm font-medium text-gray-700 mb-2">Altri ostacoli incontrati nella carriera (Facoltativo)</label>
+                        <textarea id="obstacles" name="other_obstacles" rows="3" placeholder="Raccontaci brevemente la tua esperienza..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-brand-purple hover:bg-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <span>Invia la tua storia anonima</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <p class="text-center text-xs text-gray-400 mt-4">I tuoi dati saranno trattati in forma aggregata e totalmente anonima.</p>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Back Link -->
+            <div class="text-center mt-8">
+                <a href="index.html" class="text-gray-400 hover:text-gray-600 text-sm font-medium transition flex items-center justify-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Torna alla Dashboard
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div class="py-8 border-t border-gray-200 text-center text-gray-400 text-sm bg-white">
+        <p>&copy; 2025 Team Serendipity. Gender Hack 2025.</p>
+    </div>
+
+</body>
+</html>
