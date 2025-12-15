@@ -1,4 +1,3 @@
-<!-- sondaggio.html -->
 <!DOCTYPE html>
 <html lang="it" class="scroll-smooth">
 <head>
@@ -80,11 +79,16 @@
             border-color: #7C3AED;
             box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
+        /* Custom Checkbox Style matching the theme */
+        input[type="checkbox"] {
+            accent-color: #7C3AED;
+        }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body x-data="{ mobileMenu: false, leadershipRenounced: false }">
+<body x-data="{ mobileMenu: false, surveyState: 'welcome' }">
 
-    <!-- NAVBAR (Collegata a index.html) -->
+    <!-- NAVBAR -->
     <nav class="fixed w-full z-50 glass-nav top-0 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -130,16 +134,49 @@
             
             <div class="text-center mb-10">
                 <span class="text-brand-purple font-semibold tracking-wider text-sm uppercase">Sondaggio Anonimo</span>
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">La Tua Esperienza nel Mondo del Lavoro</h1>
-                <p class="text-gray-500 mt-4 max-w-xl mx-auto">Aiutaci a raccogliere dati qualitativi per comprendere meglio le dinamiche del Gender Gap oltre i numeri ufficiali.</p>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Sviluppo di Carriera e Genere</h1>
+                <p class="text-gray-500 mt-4 max-w-xl mx-auto">La tua opinione è fondamentale per comprendere le barriere alla progressione professionale.</p>
             </div>
 
-            <!-- FORM CARD -->
-            <div class="bg-white p-8 md:p-10 rounded-3xl card-shadow border border-gray-100 relative">
+            <!-- FORM CARD CONTAINER -->
+            <div class="bg-white p-8 md:p-10 rounded-3xl card-shadow border border-gray-100 relative min-h-[400px]">
                 
-                <form action="https://formspree.io/f/xdkqwdwv" method="POST" class="space-y-8">
+                <!-- STATO 1: WELCOME SCREEN -->
+                <div x-show="surveyState === 'welcome'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Benvenuto/a</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Stiamo conducendo una ricerca sulle barriere alla progressione di carriera, con un focus specifico sulle differenze di genere nell'ambiente lavorativo.
+                        <br><br>
+                        I dati saranno trattati in forma aggregata e totalmente anonima. Vuoi partecipare al sondaggio?
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                        <button @click="surveyState = 'form'" class="flex-1 bg-brand-purple hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            Sì, voglio partecipare
+                        </button>
+                        <button @click="surveyState = 'declined'" class="flex-1 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-bold py-3 px-6 rounded-xl transition-all duration-300">
+                            No, grazie
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STATO 2: GOODBYE SCREEN -->
+                <div x-show="surveyState === 'declined'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="text-center py-10">
+                    <div class="text-6xl text-gray-300 mb-6">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Grazie comunque!</h2>
+                    <p class="text-gray-500">Hai scelto di non partecipare. Ti auguriamo una buona giornata.</p>
+                    <button @click="surveyState = 'welcome'" class="mt-8 text-brand-purple hover:text-purple-700 font-medium text-sm underline">
+                        Torna indietro
+                    </button>
+                </div>
+
+                <!-- STATO 3: IL FORM (Con Action Formspree Ripristinata) -->
+                <form x-show="surveyState === 'form'" x-cloak action="https://formspree.io/f/xdkqwdwv" method="POST" class="space-y-8" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
                     
-                    <!-- Section 1: Anagrafica Base -->
+                    <h2 class="text-xl font-bold text-gray-800 border-b border-gray-100 pb-2">La tua esperienza</h2>
+
+                    <!-- Genere e Anzianità -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">Genere</label>
@@ -158,64 +195,95 @@
                         </div>
 
                         <div>
-                            <label for="sector" class="block text-sm font-medium text-gray-700 mb-2">Settore Lavorativo</label>
-                            <div class="relative">
-                                <select id="sector" name="sector" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
-                                    <option value="" disabled selected>Seleziona...</option>
-                                    <option value="tech_it">Technology / IT</option>
-                                    <option value="engineering">Ingegneria / Aerospazio</option>
-                                    <option value="finance">Finanza / Consulenza</option>
-                                    <option value="education">Istruzione / Ricerca</option>
-                                    <option value="healthcare">Sanità</option>
-                                    <option value="other">Altro</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                                    <i class="fas fa-chevron-down text-xs"></i>
-                                </div>
-                            </div>
+                            <label for="role_years" class="block text-sm font-medium text-gray-700 mb-2">Anzianità nel ruolo (anni)</label>
+                            <input type="text" id="role_years" name="role_years" placeholder="Es. 5" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors">
                         </div>
-                    </div>
-
-                    <div>
-                        <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Ruolo Attuale</label>
-                        <input type="text" id="role" name="role" placeholder="Es. Senior Backend Developer, Project Manager..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors" required>
                     </div>
 
                     <hr class="border-gray-100">
 
-                    <!-- Section 2: Leadership & Ostacoli -->
+                    <!-- Stagnazione -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Hai mai rinunciato consapevolmente a una posizione manageriale o a una promozione?</label>
-                        <div class="flex gap-6">
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="radio" name="renounced_leadership" value="yes" @click="leadershipRenounced = true" class="w-5 h-5 text-brand-purple border-gray-300 focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition">Sì, è successo</span>
+                        <label for="stagnation" class="block text-sm font-medium text-gray-700 mb-2">Ritiene che la sua carriera abbia subito una stagnazione o un rallentamento negli ultimi anni?</label>
+                        <div class="relative">
+                            <select id="stagnation" name="stagnation" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                <option value="" disabled selected>Seleziona...</option>
+                                <option value="si">Sì</option>
+                                <option value="no">No</option>
+                                <option value="incerto">Non saprei</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ostacoli (Checkbox Group) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Quali ritiene siano stati i principali ostacoli alla sua promozione?</label>
+                        <p class="text-xs text-gray-400 mb-3 -mt-2">Seleziona tutte le voci pertinenti.</p>
+                        
+                        <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="mancanza_opportunita" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Mancanza di opportunità interne</span>
                             </label>
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="radio" name="renounced_leadership" value="no" @click="leadershipRenounced = false" class="w-5 h-5 text-brand-purple border-gray-300 focus:ring-brand-purple cursor-pointer" checked>
-                                <span class="text-gray-600 group-hover:text-gray-900 transition">No, mai</span>
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="carichi_familiari" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Difficoltà di conciliazione vita-lavoro / Carichi familiari</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="bias_genere" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Pregiudizi o stereotipi di genere</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="mancanza_mentoring" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Mancanza di mentoring o supporto dalla leadership</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="trasparenza" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Poca trasparenza nei processi di valutazione</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="gap_salariale" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Disparità salariale non motivata</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
+                                <input type="checkbox" name="obstacle" value="altro" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
+                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Altro</span>
                             </label>
                         </div>
                     </div>
 
-                    <!-- Conditional Textarea (Alpine x-show) -->
-                    <div x-show="leadershipRenounced" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
-                        <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Se sì, qual è stata la motivazione principale?</label>
-                        <textarea id="reason" name="renounce_reason" rows="3" placeholder="Es. Carico di lavoro eccessivo, difficoltà work-life balance, ambiente tossico..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                    <!-- Percezione Genere -->
+                    <div>
+                        <label for="gender_perception" class="block text-sm font-medium text-gray-700 mb-2">Ritiene che il suo genere abbia influenzato negativamente le sue possibilità di carriera?</label>
+                        <div class="relative">
+                            <select id="gender_perception" name="gender_perception" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                <option value="molto">Sì, molto</option>
+                                <option value="abbastanza">Sì, abbastanza</option>
+                                <option value="poco">Poco</option>
+                                <option value="per_nulla">Per nulla</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
                     </div>
 
+                    <!-- Commenti -->
                     <div>
-                        <label for="obstacles" class="block text-sm font-medium text-gray-700 mb-2">Altri ostacoli incontrati nella carriera (Facoltativo)</label>
-                        <textarea id="obstacles" name="other_obstacles" rows="3" placeholder="Raccontaci brevemente la tua esperienza..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                        <label for="comments" class="block text-sm font-medium text-gray-700 mb-2">Approfondimento (Facoltativo)</label>
+                        <p class="text-xs text-gray-400 mb-2">Puoi descrivere brevemente un episodio specifico o una tua riflessione.</p>
+                        <textarea id="comments" name="comments" rows="4" placeholder="Scrivi qui..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="pt-4">
                         <button type="submit" class="w-full bg-brand-purple hover:bg-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                            <span>Invia la tua storia anonima</span>
+                            <span>Invia Risposte</span>
                             <i class="fas fa-paper-plane"></i>
                         </button>
-                        <p class="text-center text-xs text-gray-400 mt-4">I tuoi dati saranno trattati in forma aggregata e totalmente anonima.</p>
                     </div>
 
                 </form>
