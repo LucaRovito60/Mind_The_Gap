@@ -1,0 +1,534 @@
+/* ========================================
+   MIND THE GAP - Styles
+   ======================================== */
+
+/* CSS Custom Properties - Tema Chiaro (Default) */
+:root {
+    /* Colori Base */
+    --color-bg-primary: #FBFBFD;
+    --color-bg-secondary: #FFFFFF;
+    --color-bg-tertiary: #F5F5F7;
+    --color-text-primary: #1D1D1F;
+    --color-text-secondary: #6B7280;
+    --color-text-tertiary: #9CA3AF;
+
+    /* Brand Colors */
+    --color-brand-purple: #7C3AED;
+    --color-brand-orange: #F97316;
+    --color-brand-gray: #F5F5F7;
+    --color-brand-dark: #1e293b;
+
+    /* UI Elements */
+    --color-border-light: rgba(0, 0, 0, 0.05);
+    --color-border-medium: rgba(0, 0, 0, 0.1);
+    --color-border-gray: #E5E7EB;
+
+    /* Glass Effect */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(0, 0, 0, 0.05);
+
+    /* Shadows */
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
+    --shadow-card-hover: 0 10px 30px rgba(0, 0, 0, 0.06);
+    --shadow-focus: 0 0 0 3px rgba(124, 58, 237, 0.1);
+
+    /* Form Elements */
+    --color-input-bg: #F9FAFB;
+    --color-input-border: #E5E7EB;
+    --color-input-focus: #7C3AED;
+
+    /* Decorative Blobs */
+    --blob-purple: rgb(196, 181, 253);
+    --blob-orange: rgb(254, 215, 170);
+}
+
+/* Tema Scuro */
+:root[data-theme="dark"] {
+    /* Colori Base */
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-tertiary: #334155;
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #cbd5e1;
+    --color-text-tertiary: #94a3b8;
+
+    /* Brand Colors - manteniamo gli stessi */
+    --color-brand-purple: #8b5cf6;
+    --color-brand-orange: #fb923c;
+
+    /* UI Elements */
+    --color-border-light: rgba(255, 255, 255, 0.1);
+    --color-border-medium: rgba(255, 255, 255, 0.15);
+    --color-border-gray: #334155;
+
+    /* Glass Effect */
+    --glass-bg: rgba(30, 41, 59, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+
+    /* Shadows */
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-card-hover: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --shadow-focus: 0 0 0 3px rgba(139, 92, 246, 0.3);
+
+    /* Form Elements */
+    --color-input-bg: #1e293b;
+    --color-input-border: #334155;
+    --color-input-focus: #8b5cf6;
+
+    /* Decorative Blobs */
+    --blob-purple: rgb(109, 40, 217);
+    --blob-orange: rgb(194, 65, 12);
+}
+
+/* ========================================
+   Base Styles
+   ======================================== */
+
+html {
+    scroll-padding-top: 80px;
+}
+
+body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ========================================
+   Navigation
+   ======================================== */
+
+.glass-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* ========================================
+   Typography & Gradients
+   ======================================== */
+
+.text-gradient {
+    background: linear-gradient(135deg, #7C3AED 0%, #F97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========================================
+   Cards & Shadows
+   ======================================== */
+
+.card-shadow {
+    box-shadow: var(--shadow-card);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: var(--color-bg-secondary);
+}
+
+.card-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-card-hover);
+}
+
+/* ========================================
+   Form Elements
+   ======================================== */
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--color-input-focus) !important;
+    box-shadow: var(--shadow-focus) !important;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--color-brand-purple);
+}
+
+/* ========================================
+   NUOVO: Styled Checkbox per Form Sondaggio
+   ======================================== */
+
+.checkbox-label {
+    display: flex;
+    align-items: start;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background-color: rgba(124, 58, 237, 0.05);
+}
+
+.styled-checkbox {
+    margin-top: 2px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-brand-purple);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox-text {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+    transition: color 0.2s ease;
+}
+
+.checkbox-label:hover .checkbox-text {
+    color: var(--color-text-primary);
+}
+
+/* Fix Dark Mode Checkbox Hover - Invece del bianco stark, usa viola chiaro morbido */
+:root[data-theme="dark"] .checkbox-label:hover {
+    background-color: rgba(139, 92, 246, 0.12);
+}
+
+/* ========================================
+   NUOVO: Sezioni Form con Spaziatura Migliorata
+   ======================================== */
+
+.section-container {
+    padding: 20px 0;
+}
+
+.section-container h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Aggiungi respiro tra le label e gli input */
+label {
+    margin-bottom: 8px;
+}
+
+/* Migliora la leggibilità dei campi required */
+label span.text-red-500 {
+    margin-left: 2px;
+}
+
+/* ========================================
+   Toast Notification
+   ======================================== */
+
+#toast-notification {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#toast-notification.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ========================================
+   Theme Toggle Button
+   ======================================== */
+
+.theme-toggle {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+}
+
+.theme-toggle:hover {
+    background: var(--color-bg-secondary);
+    transform: scale(1.05);
+}
+
+.theme-toggle i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover i {
+    transform: rotate(20deg);
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Decorative Blobs - adattati al tema */
+.blob-purple {
+    background-color: var(--blob-purple);
+}
+
+.blob-orange {
+    background-color: var(--blob-orange);
+}
+
+/* ========================================
+   Accessibilità - Mantenimento Animazioni
+   ======================================== */
+
+/* Le animazioni sono già definite in Tailwind config
+   e vengono mantenute per tutti gli utenti come richiesto */
+
+/* ========================================
+   Tailwind Classes Overrides per Dark Mode
+   ======================================== */
+
+:root[data-theme=dark] .text-brand-purple{
+    color: rgb(162 127 221);
+}
+
+:root[data-theme="dark"] .bg-white {
+    background-color: var(--color-bg-secondary) !important;
+    color: white;
+}
+
+:root[data-theme="dark"] .text-gray-900,
+:root[data-theme="dark"] .text-gray-800,
+:root[data-theme="dark"] .text-gray-700 {
+    color: var(--color-text-primary) !important;
+}
+
+:root[data-theme="dark"] .text-gray-600,
+:root[data-theme="dark"] .text-gray-500 {
+    color: var(--color-text-secondary) !important;
+}
+
+:root[data-theme="dark"] .text-gray-400 {
+    color: var(--color-text-tertiary) !important;
+}
+
+:root[data-theme="dark"] .border-gray-100,
+:root[data-theme="dark"] .border-gray-200 {
+    border-color: var(--color-border-medium) !important;
+}
+
+:root[data-theme="dark"] .bg-gray-50,
+:root[data-theme="dark"] .bg-gray-100 {
+    background-color: var(--color-bg-tertiary) !important;
+}
+
+:root[data-theme="dark"] .hover\:bg-gray-50:hover {
+    background-color: var(--color-bg-tertiary) !important;
+}
+
+:root[data-theme="dark"] .bg-slate-900 {
+    background-color: var(--color-brand-purple) !important;
+}
+
+:root[data-theme="dark"] .hover\:bg-slate-800:hover {
+    background-color: #6D28D9 !important;
+}
+
+/* Miglioramenti per la lettura in dark mode */
+:root[data-theme="dark"] .prose {
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="dark"] .prose h1,
+:root[data-theme="dark"] .prose h2,
+:root[data-theme="dark"] .prose h3,
+:root[data-theme="dark"] .prose h4 {
+    color: var(--color-text-primary);
+}
+
+:root[data-theme="dark"] .prose strong {
+    color: var(--color-text-primary);
+}
+
+:root[data-theme="dark"] .prose a {
+    color: var(--color-brand-purple);
+}
+
+/* Card speciali con gradiente */
+:root[data-theme="dark"] .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--color-bg-secondary), var(--color-bg-tertiary)) !important;
+}
+
+:root[data-theme="dark"] .from-white {
+    --tw-gradient-from: var(--color-bg-secondary) !important;
+}
+
+:root[data-theme="dark"] .bg-gradient-to-r {
+    opacity: 0.95;
+}
+
+:root[data-theme="dark"] select option {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+}
+
+/* Toast e notifiche */
+:root[data-theme="dark"] .bg-green-500 {
+    background-color: #22c55e !important;
+}
+
+/* Badges e tags */
+:root[data-theme="dark"] .bg-purple-50 {
+    background-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+:root[data-theme="dark"] .bg-orange-50,
+:root[data-theme="dark"] .bg-orange-100 {
+    background-color: rgba(251, 146, 60, 0.2) !important;
+}
+
+:root[data-theme="dark"] .bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+:root[data-theme="dark"] .bg-green-50,
+:root[data-theme="dark"] .bg-green-100 {
+    background-color: rgba(34, 197, 94, 0.2) !important;
+}
+
+:root[data-theme="dark"] .bg-blue-50,
+:root[data-theme="dark"] .bg-blue-100 {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Bordi colorati */
+:root[data-theme="dark"] .border-purple-100,
+:root[data-theme="dark"] .border-purple-200 {
+    border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+:root[data-theme="dark"] .border-orange-200 {
+    border-color: rgba(251, 146, 60, 0.3) !important;
+}
+
+:root[data-theme="dark"] .border-red-100 {
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+:root[data-theme="dark"] .border-green-100 {
+    border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+:root[data-theme="dark"] .border-blue-100 {
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Testi colorati */
+:root[data-theme="dark"] .text-green-600 {
+    color: #4ade80 !important;
+}
+
+:root[data-theme="dark"] .text-red-600 {
+    color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .text-blue-600 {
+    color: #60a5fa !important;
+}
+
+:root[data-theme="dark"] .text-pink-600 {
+    color: #f472b6 !important;
+}
+
+/* ========================================
+   Call to Action Sondaggio - Dark Mode
+   ======================================== */
+
+:root[data-theme="dark"] .from-orange-50 {
+    --tw-gradient-from: rgba(194, 65, 12, 0.15) !important;
+}
+
+:root[data-theme="dark"] .to-orange-100 {
+    --tw-gradient-to: rgba(194, 65, 12, 0.2) !important;
+}
+
+:root[data-theme="dark"] .border-orange-200 {
+    border-color: rgba(251, 146, 60, 0.3) !important;
+}
+
+/* Override specifico per il CTA sondaggio */
+:root[data-theme="dark"] .bg-gradient-to-r.from-orange-50 {
+    background-image: linear-gradient(to right, rgba(194, 65, 12, 0.2), rgba(234, 88, 12, 0.25)) !important;
+}
+
+/* ========================================
+   Segmentation Cards & Survey Forms
+   ======================================== */
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.styled-checkbox {
+    margin-top: 0.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    border: 2px solid #d1d5db;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox-text {
+    color: #4b5563;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.section-container {
+    position: relative;
+}
+
+/* Dark mode adjustments for form elements */
+:root[data-theme="dark"] .checkbox-label:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme="dark"] .checkbox-text {
+    color: var(--color-text-secondary);
+}
+
+:root[data-theme="dark"] .styled-checkbox {
+    border-color: var(--color-border-medium);
+    background-color: var(--color-input-bg);
+}
+
+
+/* Testo del CTA in dark mode */
+:root[data-theme="dark"] .bg-gradient-to-r.from-orange-50 h3,
+:root[data-theme="dark"] .bg-gradient-to-r.from-orange-50 p {
+    color: var(--color-text-primary) !important;
+}
+
+/* Icona del CTA in dark mode */
+:root[data-theme="dark"] .bg-gradient-to-r.from-orange-50 .bg-brand-orange {
+    background-color: var(--color-brand-orange) !important;
+}
+
+/* Bordo del CTA in dark mode */
+:root[data-theme="dark"] .bg-gradient-to-r.from-orange-50.border-orange-200 {
+    border-color: rgba(251, 146, 60, 0.4) !important;
+}

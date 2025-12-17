@@ -17,6 +17,9 @@
     <!-- Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="styles.css">
+
+
     <!-- Configurazione Tailwind e Stili Personalizzati -->
     <script>
         tailwind.config = {
@@ -54,39 +57,9 @@
         }
     </script>
 
-    <style>
-        body {
-            background-color: #FBFBFD;
-            color: #1D1D1F;
-        }
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .text-gradient {
-            background: linear-gradient(135deg, #7C3AED 0%, #F97316 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .card-shadow {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        }
-        /* Custom form focus rings */
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #7C3AED;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-        }
-        /* Custom Checkbox Style matching the theme */
-        input[type="checkbox"] {
-            accent-color: #7C3AED;
-        }
-        [x-cloak] { display: none !important; }
-    </style>
+
 </head>
-<body x-data="{ mobileMenu: false, surveyState: 'welcome' }">
+<body x-data="{ mobileMenu: false, surveyState: 'welcome', isDark: false, userType: null }">
 
     <!-- NAVBAR -->
     <nav class="fixed w-full z-50 glass-nav top-0 transition-all duration-300">
@@ -98,16 +71,27 @@
                 </a>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8">
+                <div class="hidden md:flex space-x-8 items-center">
                     <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Home</a>
                     <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Report</a>
                     <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Fonti</a>
                     <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Discussioni</a>
                     <a href="index.html" class="text-gray-500 hover:text-gray-900 transition-colors text-sm uppercase tracking-wide">Info</a>
+
+                    <!-- Theme Toggle -->
+                    <!-- Theme Toggle -->
+                    <button @click="toggleTheme()" class="theme-toggle" title="Cambia tema">
+                        <i class="fas" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+                    </button>
                 </div>
 
                 <!-- Mobile Button -->
-                <div class="md:hidden flex items-center">
+                <div class="md:hidden flex items-center gap-3">
+                    <!-- Theme Toggle Mobile -->
+                    <button @click="toggleTheme()" class="theme-toggle" title="Cambia tema">
+                        <i class="fas" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+                    </button>
+
                     <button @click="mobileMenu = !mobileMenu" class="text-gray-600 focus:outline-none">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
@@ -150,7 +134,7 @@
                         I dati saranno trattati in forma aggregata e totalmente anonima. Vuoi partecipare al sondaggio?
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                        <button @click="surveyState = 'form'" class="flex-1 bg-brand-purple hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                        <button @click="surveyState = 'segmentation'" class="flex-1 bg-brand-purple hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                             Sì, voglio partecipare
                         </button>
                         <button @click="surveyState = 'declined'" class="flex-1 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-bold py-3 px-6 rounded-xl transition-all duration-300">
@@ -171,22 +155,185 @@
                     </button>
                 </div>
 
-                <!-- STATO 3: IL FORM (Con Action Formspree Ripristinata) -->
-                <form x-show="surveyState === 'form'" x-cloak action="https://formspree.io/f/xdkqwdwv" method="POST" class="space-y-8" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
-                    
-                    <h2 class="text-xl font-bold text-gray-800 border-b border-gray-100 pb-2">La tua esperienza</h2>
+                <!-- STATO 2.5: SEGMENTATION SCREEN (NUOVO) -->
+                <div x-show="surveyState === 'segmentation'" x-cloak x-transition:enter="transition ease-out duration-400" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="text-center py-8">
+                    <!-- Icon Header -->
+                    <div class="mb-6">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-orange-100 mb-4">
+                            <i class="fas fa-user-tag text-3xl text-brand-purple"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Prima di iniziare...</h2>
+                        <p class="text-gray-500 text-sm max-w-md mx-auto">
+                            Aiutaci a personalizzare il sondaggio in base al tuo profilo
+                        </p>
+                    </div>
 
-                    <!-- Genere e Anzianità -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">Genere</label>
+                    <!-- Segmentation Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 max-w-2xl mx-auto">
+                        <!-- Card Studente -->
+                        <button
+                            @click="userType = 'studente'; surveyState = 'form-studente'"
+                            class="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-brand-purple rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 text-left">
+
+                            <!-- Gradient Background on Hover -->
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-purple-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                            <!-- Content -->
+                            <div class="relative z-10">
+                                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fas fa-graduation-cap text-2xl text-brand-purple"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Sono uno Studente</h3>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    Attualmente frequento l'università o una scuola superiore
+                                </p>
+                                <div class="flex items-center text-brand-purple font-medium text-sm">
+                                    <span>Continua</span>
+                                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- Card Lavoratore -->
+                        <button
+                            @click="userType = 'lavoratore'; surveyState = 'form-lavoratore'"
+                            class="group relative overflow-hidden bg-white border-2 border-gray-200 hover:border-brand-orange rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 text-left">
+
+                            <!-- Gradient Background on Hover -->
+                            <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-orange-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                            <!-- Content -->
+                            <div class="relative z-10">
+                                <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fas fa-briefcase text-2xl text-brand-orange"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Sono un Lavoratore</h3>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    Lavoro attualmente nel settore tecnologico o affini
+                                </p>
+                                <div class="flex items-center text-brand-orange font-medium text-sm">
+                                    <span>Continua</span>
+                                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Back Button -->
+                    <button @click="surveyState = 'welcome'" class="mt-8 text-gray-400 hover:text-gray-600 font-medium text-sm inline-flex items-center transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i> Torna indietro
+                    </button>
+                </div>
+
+                <!-- STATO 3A: FORM LAVORATORI (Form esistente) -->
+                <form x-show="surveyState === 'form-lavoratore'" x-cloak action="https://formspree.io/f/xdkqwdwv" method="POST" class="space-y-10" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+
+                    <!-- Hidden field per tracciare il tipo utente -->
+                    <input type="hidden" name="user_type" value="lavoratore">
+
+
+
+                    <!-- ========== SEZIONE 1: DATI PROFESSIONALI ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-brand-purple font-bold">1</div>
+                            <h2 class="text-xl font-bold text-gray-800">Dati Professionali</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Genere -->
+                            <div>
+                                <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">Genere <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select id="gender" name="gender" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                        <option value="" disabled selected>Seleziona...</option>
+                                        <option value="donna">Donna</option>
+                                        <option value="uomo">Uomo</option>
+                                        <option value="non-binary">Non-binary / Altro</option>
+                                        <option value="prefer-not-say">Preferisco non specificare</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NUOVO: Ruolo Attuale -->
+                            <div>
+                                <label for="current_role" class="block text-sm font-medium text-gray-700 mb-2">Ruolo Attuale <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select id="current_role" name="current_role" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                        <option value="" disabled selected>Seleziona...</option>
+                                        <option value="junior">Junior / Entry Level</option>
+                                        <option value="mid">Middle / Specialist</option>
+                                        <option value="senior">Senior / Expert</option>
+                                        <option value="lead">Team Lead / Coordinator</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="director">Director / C-Level</option>
+                                        <option value="other">Altro</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <!-- NUOVO: Settore Industriale -->
+                            <div>
+                                <label for="industry" class="block text-sm font-medium text-gray-700 mb-2">Settore Industriale</label>
+                                <div class="relative">
+                                    <select id="industry" name="industry" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                        <option value="" disabled selected>Seleziona...</option>
+                                        <option value="tech">Technology / Software</option>
+                                        <option value="finance">Finance / Banking</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="manufacturing">Manufacturing / Industry</option>
+                                        <option value="healthcare">Healthcare / Pharma</option>
+                                        <option value="retail">Retail / E-commerce</option>
+                                        <option value="telecom">Telecommunications</option>
+                                        <option value="energy">Energy / Utilities</option>
+                                        <option value="other">Altro</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NUOVO: Anni di Esperienza Totale -->
+                            <div>
+                                <label for="total_experience" class="block text-sm font-medium text-gray-700 mb-2">Anni di Esperienza Totale</label>
+                                <input type="number" id="total_experience" name="total_experience" min="0" max="50" placeholder="Es. 8" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <!-- Anzianità nel ruolo attuale -->
+                            <label for="role_years" class="block text-sm font-medium text-gray-700 mb-2">Anzianità nel ruolo attuale (anni)</label>
+                            <input type="text" id="role_years" name="role_years" placeholder="Es. 3" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors">
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-200 my-8">
+
+                    <!-- ========== SEZIONE 2: ESPERIENZA DI CARRIERA ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-brand-orange font-bold">2</div>
+                            <h2 class="text-xl font-bold text-gray-800">Esperienza di Carriera</h2>
+                        </div>
+
+                        <!-- Stagnazione -->
+                        <div class="mb-6">
+                            <label for="stagnation" class="block text-sm font-medium text-gray-700 mb-2">Ritiene che la sua carriera abbia subito una stagnazione o un rallentamento negli ultimi anni?</label>
                             <div class="relative">
-                                <select id="gender" name="gender" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                <select id="stagnation" name="stagnation" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
                                     <option value="" disabled selected>Seleziona...</option>
-                                    <option value="donna">Donna</option>
-                                    <option value="uomo">Uomo</option>
-                                    <option value="non-binary">Non-binary / Altro</option>
-                                    <option value="prefer-not-say">Preferisco non specificare</option>
+                                    <option value="si">Sì</option>
+                                    <option value="no">No</option>
+                                    <option value="incerto">Non saprei</option>
                                 </select>
                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                                     <i class="fas fa-chevron-down text-xs"></i>
@@ -194,92 +341,313 @@
                             </div>
                         </div>
 
+                        <!-- Percezione Genere -->
                         <div>
-                            <label for="role_years" class="block text-sm font-medium text-gray-700 mb-2">Anzianità nel ruolo (anni)</label>
-                            <input type="text" id="role_years" name="role_years" placeholder="Es. 5" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors">
-                        </div>
-                    </div>
-
-                    <hr class="border-gray-100">
-
-                    <!-- Stagnazione -->
-                    <div>
-                        <label for="stagnation" class="block text-sm font-medium text-gray-700 mb-2">Ritiene che la sua carriera abbia subito una stagnazione o un rallentamento negli ultimi anni?</label>
-                        <div class="relative">
-                            <select id="stagnation" name="stagnation" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
-                                <option value="" disabled selected>Seleziona...</option>
-                                <option value="si">Sì</option>
-                                <option value="no">No</option>
-                                <option value="incerto">Non saprei</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                                <i class="fas fa-chevron-down text-xs"></i>
+                            <label for="gender_perception" class="block text-sm font-medium text-gray-700 mb-2">Ritiene che il suo genere abbia influenzato negativamente le sue possibilità di carriera?</label>
+                            <div class="relative">
+                                <select id="gender_perception" name="gender_perception" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="molto">Sì, molto</option>
+                                    <option value="abbastanza">Sì, abbastanza</option>
+                                    <option value="poco">Poco</option>
+                                    <option value="per_nulla">Per nulla</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Ostacoli (Checkbox Group) -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Quali ritiene siano stati i principali ostacoli alla sua promozione?</label>
-                        <p class="text-xs text-gray-400 mb-3 -mt-2">Seleziona tutte le voci pertinenti.</p>
-                        
-                        <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="mancanza_opportunita" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Mancanza di opportunità interne</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="carichi_familiari" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Difficoltà di conciliazione vita-lavoro / Carichi familiari</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="bias_genere" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Pregiudizi o stereotipi di genere</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="mancanza_mentoring" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Mancanza di mentoring o supporto dalla leadership</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="trasparenza" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Poca trasparenza nei processi di valutazione</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="gap_salariale" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Disparità salariale non motivata</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer group hover:bg-white p-2 rounded-lg transition-colors">
-                                <input type="checkbox" name="obstacle" value="altro" class="mt-1 w-5 h-5 text-brand-purple border-gray-300 rounded focus:ring-brand-purple cursor-pointer">
-                                <span class="text-gray-600 group-hover:text-gray-900 transition text-sm">Altro</span>
-                            </label>
-                        </div>
-                    </div>
+                    <hr class="border-gray-200 my-8">
 
-                    <!-- Percezione Genere -->
-                    <div>
-                        <label for="gender_perception" class="block text-sm font-medium text-gray-700 mb-2">Ritiene che il suo genere abbia influenzato negativamente le sue possibilità di carriera?</label>
-                        <div class="relative">
-                            <select id="gender_perception" name="gender_perception" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
-                                <option value="molto">Sì, molto</option>
-                                <option value="abbastanza">Sì, abbastanza</option>
-                                <option value="poco">Poco</option>
-                                <option value="per_nulla">Per nulla</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-                                <i class="fas fa-chevron-down text-xs"></i>
+                    <!-- ========== SEZIONE 3: ANALISI OSTACOLI ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold">3</div>
+                            <h2 class="text-xl font-bold text-gray-800">Ostacoli alla Progressione</h2>
+                        </div>
+
+                        <!-- Ostacoli (Checkbox Group) -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Quali ritiene siano stati i principali ostacoli alla sua promozione?</label>
+                            <p class="text-xs text-gray-400 mb-4">Seleziona tutte le voci pertinenti.</p>
+
+                            <div class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="mancanza_opportunita" class="styled-checkbox">
+                                    <span class="checkbox-text">Mancanza di opportunità interne</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="carichi_familiari" class="styled-checkbox">
+                                    <span class="checkbox-text">Difficoltà di conciliazione vita-lavoro / Carichi familiari</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="bias_genere" class="styled-checkbox">
+                                    <span class="checkbox-text">Pregiudizi o stereotipi di genere</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="mancanza_mentoring" class="styled-checkbox">
+                                    <span class="checkbox-text">Mancanza di mentoring o supporto dalla leadership</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="trasparenza" class="styled-checkbox">
+                                    <span class="checkbox-text">Poca trasparenza nei processi di valutazione</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="gap_salariale" class="styled-checkbox">
+                                    <span class="checkbox-text">Disparità salariale non motivata</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="obstacle" value="altro" class="styled-checkbox">
+                                    <span class="checkbox-text">Altro</span>
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Commenti -->
-                    <div>
-                        <label for="comments" class="block text-sm font-medium text-gray-700 mb-2">Approfondimento (Facoltativo)</label>
-                        <p class="text-xs text-gray-400 mb-2">Puoi descrivere brevemente un episodio specifico o una tua riflessione.</p>
-                        <textarea id="comments" name="comments" rows="4" placeholder="Scrivi qui..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                    <hr class="border-gray-200 my-8">
+
+                    <!-- ========== SEZIONE 4: RIFLESSIONE PERSONALE ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">4</div>
+                            <h2 class="text-xl font-bold text-gray-800">La Tua Voce</h2>
+                        </div>
+
+                        <!-- Commenti -->
+                        <div class="mb-6">
+                            <label for="comments" class="block text-sm font-medium text-gray-700 mb-2">Approfondimento (Facoltativo)</label>
+                            <p class="text-xs text-gray-400 mb-3">Puoi descrivere brevemente un episodio specifico o una tua riflessione.</p>
+                            <textarea id="comments" name="comments" rows="4" placeholder="Scrivi qui..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                        </div>
+
+                        <!-- NUOVO: Come ci hai conosciuto -->
+                        <div>
+                            <label for="referral_source" class="block text-sm font-medium text-gray-700 mb-2">Come ci hai conosciuto?</label>
+                            <div class="relative">
+                                <select id="referral_source" name="referral_source" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="social">Social Media (LinkedIn, Instagram, etc.)</option>
+                                    <option value="colleague">Passaparola / Collega</option>
+                                    <option value="event">Evento / Conferenza</option>
+                                    <option value="search">Ricerca Web</option>
+                                    <option value="newsletter">Newsletter / Email</option>
+                                    <option value="other">Altro</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="pt-4">
+                    <div class="pt-6">
+                        <button type="submit" class="w-full bg-brand-purple hover:bg-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <span>Invia Risposte</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+
+                </form>
+
+                <!-- STATO 3B: FORM STUDENTI (NUOVO - Ottimizzato) -->
+                <form x-show="surveyState === 'form-studente'" x-cloak action="https://formspree.io/f/xdkqwdwv" method="POST" class="space-y-8" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+
+                    <!-- Hidden field per tracciare il tipo utente -->
+                    <input type="hidden" name="user_type" value="studente">
+
+                    <!-- ========== SEZIONE 1: PROFILO ACCADEMICO ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-brand-purple font-bold">1</div>
+                            <h2 class="text-xl font-bold text-gray-800">Il Tuo Profilo</h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Genere -->
+                            <div>
+                                <label for="gender_student" class="block text-sm font-medium text-gray-700 mb-2">Genere <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select id="gender_student" name="gender" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                        <option value="" disabled selected>Seleziona...</option>
+                                        <option value="donna">Donna</option>
+                                        <option value="uomo">Uomo</option>
+                                        <option value="non-binary">Non-binary / Altro</option>
+                                        <option value="prefer-not-say">Preferisco non specificare</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Livello di Studi -->
+                            <div>
+                                <label for="education_level" class="block text-sm font-medium text-gray-700 mb-2">Livello di Studi <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select id="education_level" name="education_level" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                        <option value="" disabled selected>Seleziona...</option>
+                                        <option value="liceo">Scuola Superiore (Liceo/Istituto Tecnico)</option>
+                                        <option value="triennale">Laurea Triennale</option>
+                                        <option value="magistrale">Laurea Magistrale</option>
+                                        <option value="master">Master / PhD</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Area di Studio -->
+                            <div class="md:col-span-2">
+                                <label for="field_of_study" class="block text-sm font-medium text-gray-700 mb-2">Area di Studio <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select id="field_of_study" name="field_of_study" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                        <option value="" disabled selected>Seleziona...</option>
+                                        <option value="informatica">Informatica / Computer Science</option>
+                                        <option value="ingegneria">Ingegneria (Elettronica, Informatica, etc.)</option>
+                                        <option value="matematica">Matematica / Statistica</option>
+                                        <option value="fisica">Fisica</option>
+                                        <option value="economia">Economia / Management</option>
+                                        <option value="design">Design / UX/UI</option>
+                                        <option value="umanistico">Area Umanistica</option>
+                                        <option value="altro_stem">Altro STEM</option>
+                                        <option value="altro_non_stem">Altro (Non-STEM)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-200 my-6">
+
+                    <!-- ========== SEZIONE 2: ASPIRAZIONI E PERCEZIONI ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">2</div>
+                            <h2 class="text-xl font-bold text-gray-800">Il Tuo Futuro nel Tech</h2>
+                        </div>
+
+                        <!-- Interesse verso il settore Tech -->
+                        <div class="mb-6">
+                            <label for="tech_interest" class="block text-sm font-medium text-gray-700 mb-2">Quanto sei interessato/a a lavorare nel settore tecnologico? <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select id="tech_interest" name="tech_interest" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="molto">Molto interessato/a</option>
+                                    <option value="abbastanza">Abbastanza interessato/a</option>
+                                    <option value="poco">Poco interessato/a</option>
+                                    <option value="per_nulla">Per nulla interessato/a</option>
+                                    <option value="incerto">Non sono sicuro/a</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Percezione del Gender Gap -->
+                        <div class="mb-6">
+                            <label for="gender_gap_awareness" class="block text-sm font-medium text-gray-700 mb-2">Pensi che il tuo genere possa influenzare le opportunità di carriera nel Tech? <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select id="gender_gap_awareness" name="gender_gap_awareness" required class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="si_molto">Sì, molto</option>
+                                    <option value="si_abbastanza">Sì, abbastanza</option>
+                                    <option value="poco">Poco</option>
+                                    <option value="per_nulla">Per nulla</option>
+                                    <option value="non_saprei">Non saprei</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Principali Preoccupazioni -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Quali sono le tue principali preoccupazioni riguardo una carriera nel Tech?</label>
+                            <p class="text-xs text-gray-400 mb-4">Seleziona tutte le voci pertinenti.</p>
+
+                            <div class="space-y-2 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="competenza_tecnica" class="styled-checkbox">
+                                    <span class="checkbox-text">Mancanza di competenze tecniche sufficienti</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="ambiente_maschile" class="styled-checkbox">
+                                    <span class="checkbox-text">Ambiente di lavoro prevalentemente maschile</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="discriminazione" class="styled-checkbox">
+                                    <span class="checkbox-text">Possibili discriminazioni di genere</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="work_life_balance" class="styled-checkbox">
+                                    <span class="checkbox-text">Difficoltà nel bilanciare vita privata e lavoro</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="role_models" class="styled-checkbox">
+                                    <span class="checkbox-text">Mancanza di role models femminili</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="salario" class="styled-checkbox">
+                                    <span class="checkbox-text">Preoccupazioni sul gender pay gap</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="nessuna" class="styled-checkbox">
+                                    <span class="checkbox-text">Nessuna preoccupazione particolare</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="student_concern" value="altro" class="styled-checkbox">
+                                    <span class="checkbox-text">Altro</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-200 my-6">
+
+                    <!-- ========== SEZIONE 3: LA TUA VOCE ========== -->
+                    <div class="section-container">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">3</div>
+                            <h2 class="text-xl font-bold text-gray-800">Condividi il Tuo Pensiero</h2>
+                        </div>
+
+                        <!-- Commenti -->
+                        <div class="mb-6">
+                            <label for="student_comments" class="block text-sm font-medium text-gray-700 mb-2">C'è qualcosa che vorresti aggiungere? (Facoltativo)</label>
+                            <p class="text-xs text-gray-400 mb-3">Condividi esperienze, dubbi o suggerimenti per rendere il settore Tech più inclusivo.</p>
+                            <textarea id="student_comments" name="comments" rows="4" placeholder="Scrivi qui..." class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 rounded-xl focus:bg-white transition-colors"></textarea>
+                        </div>
+
+                        <!-- Come ci hai conosciuto -->
+                        <div>
+                            <label for="referral_source_student" class="block text-sm font-medium text-gray-700 mb-2">Come ci hai conosciuto?</label>
+                            <div class="relative">
+                                <select id="referral_source_student" name="referral_source" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl appearance-none focus:bg-white transition-colors cursor-pointer">
+                                    <option value="" disabled selected>Seleziona...</option>
+                                    <option value="social">Social Media (LinkedIn, Instagram, etc.)</option>
+                                    <option value="university">Università / Professore</option>
+                                    <option value="friend">Amici / Compagni di corso</option>
+                                    <option value="event">Evento / Career Day</option>
+                                    <option value="blog">Blog / Articolo online</option>
+                                    <option value="other">Altro</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-6">
                         <button type="submit" class="w-full bg-brand-purple hover:bg-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
                             <span>Invia Risposte</span>
                             <i class="fas fa-paper-plane"></i>
@@ -304,5 +672,51 @@
         <p>&copy; 2025 Team Serendipity. Gender Hack 2025.</p>
     </div>
 
+    <!-- Script per Theme Toggle -->
+    <script>
+        // Inizializza il tema al caricamento (default: bianco)
+        const savedTheme = localStorage.getItem('theme') || '';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Funzione per toggle del tema
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? '' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // Aggiorna lo stato isDark nel body
+            const bodyEl = document.querySelector('body');
+            if (bodyEl && window.Alpine) {
+                try {
+                    const data = Alpine.$data(bodyEl);
+                    if (data) {
+                        data.isDark = newTheme === 'dark';
+                    }
+                } catch (e) {
+                    console.log('Alpine not ready yet');
+                }
+            }
+        }
+
+        // Quando Alpine.js è pronto, sincronizza lo stato
+        document.addEventListener('alpine:init', () => {
+            const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
+            // Inizializza lo stato al caricamento
+            setTimeout(() => {
+                const bodyEl = document.querySelector('body');
+                if (bodyEl && window.Alpine) {
+                    const data = Alpine.$data(bodyEl);
+                    if (data) {
+                        data.isDark = isDarkTheme;
+                    }
+                }
+            }, 100);
+        });
+    </script>
+
 </body>
 </html>
+
